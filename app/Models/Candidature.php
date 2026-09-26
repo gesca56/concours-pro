@@ -11,6 +11,7 @@ class Candidature extends Model
     protected $fillable = [
         'user_id',
         'concours_id',
+        'diplome_candidat',
         'numero_anonymat',
         'statut',
         'note_totale',
