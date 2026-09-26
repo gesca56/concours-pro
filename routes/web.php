@@ -28,7 +28,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'verified', 'role:candidat'])->prefix('candidat')->name('candidat.')->group(function () {
-    Route::get('/', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/', function () {
+        $derniereCandidature = request()->user()->candidatures()->with('concours')->latest()->first();
+
+        return view('candidat.dashboard', compact('derniereCandidature'));
+    })->name('dashboard');
 });
 
 Route::middleware(['auth', 'verified', 'role:candidat'])->group(function () {
