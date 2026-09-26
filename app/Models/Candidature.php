@@ -13,6 +13,7 @@ class Candidature extends Model
         'concours_id',
         'diplome_candidat',
         'numero_anonymat',
+        'jeton_convocation',
         'statut',
         'note_totale',
         'date_soumission',

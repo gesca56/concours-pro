@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Candidature;
 use App\Models\Paiement;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PaiementService
 {
@@ -50,7 +51,10 @@ class PaiementService
                 ->pluck('type');
 
             if ($paiementsValides->contains('inscription') && $paiementsValides->contains('visite_medicale')) {
-                $candidature->update(['statut' => 'eligible']);
+                $candidature->update([
+                    'statut' => 'eligible',
+                    'jeton_convocation' => $candidature->jeton_convocation ?? (string) Str::uuid(),
+                ]);
             }
         });
 

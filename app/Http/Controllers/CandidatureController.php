@@ -6,6 +6,7 @@ use App\Enums\StatutConcours;
 use App\Http\Requests\StoreCandidatureRequest;
 use App\Models\Candidature;
 use App\Models\Concours;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class CandidatureController extends Controller
@@ -64,6 +65,17 @@ class CandidatureController extends Controller
         $candidature->load('concours', 'documents', 'paiements');
 
         return view('candidatures.show', compact('candidature'));
+    }
+
+    public function fiche(Candidature $candidature)
+    {
+        $this->authorizeCandidat($candidature);
+
+        $candidature->load('concours', 'candidat');
+
+        $pdf = Pdf::loadView('pdf.fiche-candidature', compact('candidature'));
+
+        return $pdf->stream("fiche-candidature-{$candidature->id}.pdf");
     }
 
     private function authorizeCandidat(Candidature $candidature): void

@@ -2,9 +2,11 @@
 
 use App\Enums\Role;
 use App\Http\Controllers\CandidatureController;
+use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RecuController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -37,8 +39,11 @@ Route::middleware(['auth', 'verified', 'role:candidat'])->prefix('candidat')->na
 
 Route::middleware(['auth', 'verified', 'role:candidat'])->group(function () {
     Route::resource('candidatures', CandidatureController::class)->only(['index', 'create', 'store', 'show']);
+    Route::get('candidatures/{candidature}/fiche', [CandidatureController::class, 'fiche'])->name('candidatures.fiche');
     Route::post('candidatures/{candidature}/paiements', [PaiementController::class, 'store'])->name('candidatures.paiements.store');
     Route::post('candidatures/{candidature}/documents', [DocumentController::class, 'store'])->name('candidatures.documents.store');
+    Route::get('candidatures/{candidature}/convocation', [ConvocationController::class, 'show'])->name('candidatures.convocation');
+    Route::get('paiements/{paiement}/recu', [RecuController::class, 'show'])->name('paiements.recu');
 });
 
 Route::middleware(['auth', 'verified', 'role:receptionniste'])->prefix('receptionniste')->name('receptionniste.')->group(function () {

@@ -35,6 +35,19 @@
                         <dd class="text-gray-900">{{ $candidature->date_soumission?->format('d/m/Y') }}</dd>
                     </div>
                 </dl>
+
+                <div class="flex gap-4">
+                    <a href="{{ route('candidatures.fiche', $candidature) }}" target="_blank"
+                       class="inline-flex items-center text-sm text-institutionnel hover:text-institutionnel-hover font-medium">
+                        {{ __('Fiche de candidature') }}
+                    </a>
+                    @if ($candidature->jeton_convocation)
+                        <a href="{{ route('candidatures.convocation', $candidature) }}" target="_blank"
+                           class="inline-flex items-center text-sm text-institutionnel hover:text-institutionnel-hover font-medium">
+                            {{ __('Convocation (QR Code)') }}
+                        </a>
+                    @endif
+                </div>
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
@@ -77,7 +90,14 @@
                 @forelse ($candidature->paiements as $paiement)
                     <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
                         <span class="text-sm text-gray-700">{{ ucfirst($paiement->type) }} — {{ number_format($paiement->montant, 0, ',', ' ') }} FCFA</span>
-                        <x-statut-badge :statut="$paiement->statut" />
+                        <div class="flex items-center gap-3">
+                            @if ($paiement->statut === 'valide')
+                                <a href="{{ route('paiements.recu', $paiement) }}" target="_blank" class="text-xs text-institutionnel hover:text-institutionnel-hover">
+                                    {{ __('Reçu') }}
+                                </a>
+                            @endif
+                            <x-statut-badge :statut="$paiement->statut" />
+                        </div>
                     </div>
                 @empty
                     <p class="text-sm text-gray-500">{{ __('Aucun paiement enregistré.') }}</p>
