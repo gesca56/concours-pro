@@ -4,10 +4,8 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
-                <div class="shrink-0 flex items-center gap-2">
-                    <a href="{{ route('dashboard') }}" class="text-white font-bold tracking-wide">
-                        SIGEC <span class="text-institutionnel font-normal">IPNETP</span>
-                    </a>
+                <div class="shrink-0 flex items-center">
+                    <x-logo dark :href="route('dashboard')" />
                 </div>
 
                 <!-- Navigation Links -->
