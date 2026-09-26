@@ -27,19 +27,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Route de diagnostic temporaire — à retirer une fois le déploiement stabilisé.
-Route::get('/debug-env', function () {
-    return response()->json([
-        'getenv_APP_KEY' => getenv('APP_KEY'),
-        'env_APP_KEY' => env('APP_KEY'),
-        'config_app_key' => config('app.key'),
-        'getenv_DB_HOST' => getenv('DB_HOST'),
-        'php_sapi' => php_sapi_name(),
-        'env_file_exists' => file_exists(base_path('.env')),
-        'env_file_content_sample' => file_exists(base_path('.env')) ? substr(file_get_contents(base_path('.env')), 0, 500) : null,
-    ]);
-});
-
 Route::get('/dashboard', function () {
     return redirect()->route(match (request()->user()->role) {
         Role::Candidat => 'candidat.dashboard',
