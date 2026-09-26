@@ -1,3 +1,13 @@
+# --- Étape 1 : compilation des assets front-end (Tailwind, Alpine.js) ---
+FROM node:20-slim AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY resources resources
+COPY vite.config.js ./
+RUN npm run build
+
+# --- Étape 2 : application PHP ---
 FROM php:8.2-apache
 
 # Extensions nécessaires à Laravel + intervention/image (GD) + PDF (dompdf)
@@ -12,6 +22,7 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 COPY . .
+COPY --from=assets /app/public/build public/build
 
 RUN composer install --no-dev --optimize-autoloader --no-interaction \
     && cp -n .env.example .env \
