@@ -1,13 +1,26 @@
 <?php
 
 use App\Enums\Role;
+use App\Http\Controllers\Administration\AnonymatController;
+use App\Http\Controllers\Administration\ConcoursController as AdminConcoursController;
+use App\Http\Controllers\Administration\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Administration\DeliberationController;
 use App\Http\Controllers\CandidatureController;
 use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\Enseignant\DashboardController as EnseignantDashboardController;
+use App\Http\Controllers\Enseignant\NoteController;
+use App\Http\Controllers\Medecin\DashboardController as MedecinDashboardController;
+use App\Http\Controllers\Medecin\ValidationController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Receptionniste\CandidatureController as ReceptionnisteCandidatureController;
+use App\Http\Controllers\Receptionniste\DashboardController as ReceptionnisteDashboardController;
+use App\Http\Controllers\Receptionniste\DocumentController as ReceptionnisteDocumentController;
+use App\Http\Controllers\Receptionniste\VisiteMedicaleController;
 use App\Http\Controllers\RecuController;
 use App\Http\Controllers\SignalementPaiementController;
+use App\Http\Controllers\VerificationQrController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -30,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// --- Candidat ---
 Route::middleware(['auth', 'verified', 'role:candidat'])->prefix('candidat')->name('candidat.')->group(function () {
     Route::get('/', function () {
         $derniereCandidature = request()->user()->candidatures()->with('concours')->latest()->first();
@@ -48,20 +62,38 @@ Route::middleware(['auth', 'verified', 'role:candidat'])->group(function () {
     Route::post('paiements/{paiement}/signalement', [SignalementPaiementController::class, 'store'])->name('paiements.signalement');
 });
 
+// --- Réceptionniste ---
 Route::middleware(['auth', 'verified', 'role:receptionniste'])->prefix('receptionniste')->name('receptionniste.')->group(function () {
-    Route::get('/', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/', ReceptionnisteDashboardController::class)->name('dashboard');
+    Route::get('candidatures/{candidature}', [ReceptionnisteCandidatureController::class, 'show'])->name('candidatures.show');
+    Route::patch('documents/{document}', ReceptionnisteDocumentController::class)->name('documents.update');
+    Route::post('candidatures/{candidature}/visite-medicale', VisiteMedicaleController::class)->name('candidatures.visite-medicale');
 });
 
+// --- Médecin ---
 Route::middleware(['auth', 'verified', 'role:medecin'])->prefix('medecin')->name('medecin.')->group(function () {
-    Route::get('/', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/', MedecinDashboardController::class)->name('dashboard');
+    Route::patch('candidatures/{candidature}', ValidationController::class)->name('candidatures.valider');
 });
 
+// --- Enseignant ---
 Route::middleware(['auth', 'verified', 'role:enseignant'])->prefix('enseignant')->name('enseignant.')->group(function () {
-    Route::get('/', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/', EnseignantDashboardController::class)->name('dashboard');
+    Route::patch('candidatures/{candidature}/note', NoteController::class)->name('candidatures.note');
 });
 
+// --- Administration ---
 Route::middleware(['auth', 'verified', 'role:administration'])->prefix('administration')->name('administration.')->group(function () {
-    Route::get('/', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
+    Route::resource('concours', AdminConcoursController::class)->parameters(['concours' => 'concours']);
+    Route::post('concours/{concours}/statut', [AdminConcoursController::class, 'changerStatut'])->name('concours.statut');
+    Route::post('concours/{concours}/anonymat', AnonymatController::class)->name('concours.anonymat');
+    Route::post('concours/{concours}/deliberation', DeliberationController::class)->name('concours.deliberation');
+});
+
+// --- Vérification QR Code (réceptionniste + administration) ---
+Route::middleware(['auth', 'verified', 'role:receptionniste,administration'])->group(function () {
+    Route::get('verification-qr', VerificationQrController::class)->name('verification-qr');
 });
 
 require __DIR__.'/auth.php';

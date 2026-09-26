@@ -56,7 +56,7 @@ class ConcoursLifecycleTest extends TestCase
         $candidat = \App\Models\User::factory()->create();
         $candidature = $candidat->candidatures()->create([
             'concours_id' => $concours->id,
-            'statut' => 'eligible',
+            'statut' => 'validee',
         ]);
 
         $this->artisan("app:attribuer-numeros-anonymat {$concours->id}")->assertSuccessful();

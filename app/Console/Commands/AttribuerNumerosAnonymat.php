@@ -34,7 +34,7 @@ class AttribuerNumerosAnonymat extends Command
         }
 
         $candidatures = $concours->candidatures()
-            ->where('statut', 'eligible')
+            ->where('statut', 'validee')
             ->whereNull('numero_anonymat')
             ->get();
 

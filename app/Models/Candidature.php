@@ -14,6 +14,9 @@ class Candidature extends Model
         'diplome_candidat',
         'numero_anonymat',
         'jeton_convocation',
+        'visite_medicale_programmee_le',
+        'aptitude_medicale',
+        'motif_inaptitude',
         'statut',
         'note_totale',
         'date_soumission',
@@ -24,6 +27,7 @@ class Candidature extends Model
         return [
             'note_totale' => 'decimal:2',
             'date_soumission' => 'datetime',
+            'visite_medicale_programmee_le' => 'datetime',
         ];
     }
 
