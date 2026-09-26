@@ -7,6 +7,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RecuController;
+use App\Http\Controllers\SignalementPaiementController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -44,6 +45,7 @@ Route::middleware(['auth', 'verified', 'role:candidat'])->group(function () {
     Route::post('candidatures/{candidature}/documents', [DocumentController::class, 'store'])->name('candidatures.documents.store');
     Route::get('candidatures/{candidature}/convocation', [ConvocationController::class, 'show'])->name('candidatures.convocation');
     Route::get('paiements/{paiement}/recu', [RecuController::class, 'show'])->name('paiements.recu');
+    Route::post('paiements/{paiement}/signalement', [SignalementPaiementController::class, 'store'])->name('paiements.signalement');
 });
 
 Route::middleware(['auth', 'verified', 'role:receptionniste'])->prefix('receptionniste')->name('receptionniste.')->group(function () {

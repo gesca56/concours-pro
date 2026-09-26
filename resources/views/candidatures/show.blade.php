@@ -88,16 +88,43 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-medium text-gray-900 mb-4">{{ __('Paiements') }}</h3>
                 @forelse ($candidature->paiements as $paiement)
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                        <span class="text-sm text-gray-700">{{ ucfirst($paiement->type) }} — {{ number_format($paiement->montant, 0, ',', ' ') }} FCFA</span>
-                        <div class="flex items-center gap-3">
-                            @if ($paiement->statut === 'valide')
-                                <a href="{{ route('paiements.recu', $paiement) }}" target="_blank" class="text-xs text-institutionnel hover:text-institutionnel-hover">
-                                    {{ __('Reçu') }}
-                                </a>
-                            @endif
-                            <x-statut-badge :statut="$paiement->statut" />
+                    @php
+                        $signalementEnCours = $paiement->signalements->firstWhere('statut', 'en_attente');
+                    @endphp
+                    <div class="py-2 border-b border-gray-100 last:border-0" x-data="{ ouvert: false }">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-700">{{ ucfirst($paiement->type) }} — {{ number_format($paiement->montant, 0, ',', ' ') }} FCFA</span>
+                            <div class="flex items-center gap-3">
+                                @if ($paiement->statut === 'valide')
+                                    <a href="{{ route('paiements.recu', $paiement) }}" target="_blank" class="text-xs text-institutionnel hover:text-institutionnel-hover">
+                                        {{ __('Reçu') }}
+                                    </a>
+                                @endif
+                                @if ($signalementEnCours)
+                                    <span class="text-xs text-amber-700">{{ __('Signalement en cours') }}</span>
+                                @elseif ($paiement->statut === 'valide')
+                                    <button type="button" @click="ouvert = !ouvert" class="text-xs text-gray-500 hover:text-gray-700 underline">
+                                        {{ __('Signaler un problème') }}
+                                    </button>
+                                @endif
+                                <x-statut-badge :statut="$paiement->statut" />
+                            </div>
                         </div>
+
+                        @if (! $signalementEnCours && $paiement->statut === 'valide')
+                            <div x-show="ouvert" x-cloak class="mt-3">
+                                <form method="POST" action="{{ route('paiements.signalement', $paiement) }}" class="space-y-2">
+                                    @csrf
+                                    <textarea name="message" rows="3" placeholder="{{ __('Décrivez le problème rencontré avec ce paiement…') }}"
+                                              class="block w-full text-sm border-gray-300 rounded-md shadow-sm"></textarea>
+                                    <x-input-error :messages="$errors->get('message')" class="mt-1" />
+                                    <button type="submit"
+                                            class="px-3 py-1.5 bg-amber-600 text-white text-xs rounded-md font-semibold hover:bg-amber-700">
+                                        {{ __('Envoyer le signalement') }}
+                                    </button>
+                                </form>
+                            </div>
+                        @endif
                     </div>
                 @empty
                     <p class="text-sm text-gray-500">{{ __('Aucun paiement enregistré.') }}</p>

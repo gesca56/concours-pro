@@ -62,7 +62,7 @@ class CandidatureController extends Controller
     {
         $this->authorizeCandidat($candidature);
 
-        $candidature->load('concours', 'documents', 'paiements');
+        $candidature->load('concours', 'documents', 'paiements.signalements');
 
         return view('candidatures.show', compact('candidature'));
     }

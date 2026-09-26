@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Paiement extends Model
 {
@@ -31,5 +32,13 @@ class Paiement extends Model
     public function candidature(): BelongsTo
     {
         return $this->belongsTo(Candidature::class);
+    }
+
+    /**
+     * @return HasMany<SignalementPaiement, $this>
+     */
+    public function signalements(): HasMany
+    {
+        return $this->hasMany(SignalementPaiement::class);
     }
 }
