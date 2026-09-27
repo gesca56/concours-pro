@@ -27,6 +27,62 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Route temporaire pour peupler les concours de démonstration en production.
+// Protégée par une clé secrète, idempotente (ignore les codes déjà existants).
+// À retirer après utilisation.
+Route::get('/seed-concours-demo/{cle}', function (string $cle) {
+    abort_unless($cle === 'concours-pro-demo-2026', 403);
+
+    $concoursDemo = [
+        [
+            'nom' => 'Concours CAP/PL 2026 — Secrétariat Bureautique',
+            'code' => 'CAPPL-SEC-2026',
+            'cycle' => 'CAP/PL',
+            'filiere' => 'Tertiaire',
+            'diplome_requis' => 'BEPC',
+            'age_min' => 17,
+            'age_max' => 25,
+            'statut' => \App\Enums\StatutConcours::Ouvert,
+            'date_ouverture' => now()->subDays(5),
+            'date_cloture' => now()->addMonth(),
+            'date_concours' => now()->addMonths(2),
+        ],
+        [
+            'nom' => 'Concours CAP/PC 2026 — Électrotechnique',
+            'code' => 'CAPPC-ELEC-2026',
+            'cycle' => 'CAP/PC',
+            'filiere' => 'Industriel',
+            'diplome_requis' => 'CAP',
+            'age_min' => 18,
+            'age_max' => 30,
+            'statut' => \App\Enums\StatutConcours::Ouvert,
+            'date_ouverture' => now()->subDays(2),
+            'date_cloture' => now()->addWeeks(3),
+            'date_concours' => now()->addMonths(2),
+        ],
+        [
+            'nom' => 'Concours CAP/IFPB 2026 — Agroéquipement',
+            'code' => 'CAPIFPB-AGRO-2026',
+            'cycle' => 'CAP/IFPB',
+            'filiere' => 'Agricole',
+            'diplome_requis' => 'BEPC',
+            'age_min' => 17,
+            'age_max' => 28,
+            'statut' => \App\Enums\StatutConcours::Brouillon,
+            'date_ouverture' => now()->addWeek(),
+            'date_cloture' => now()->addMonths(2),
+        ],
+    ];
+
+    $crees = [];
+    foreach ($concoursDemo as $data) {
+        $concours = \App\Models\Concours::firstOrCreate(['code' => $data['code']], $data);
+        $crees[] = $concours->nom;
+    }
+
+    return response()->json(['concours' => $crees]);
+});
+
 Route::get('/dashboard', function () {
     return redirect()->route(match (request()->user()->role) {
         Role::Candidat => 'candidat.dashboard',
