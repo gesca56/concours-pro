@@ -12,10 +12,15 @@ FROM php:8.2-apache
 
 # Extensions nécessaires à Laravel + intervention/image (GD) + PDF (dompdf)
 RUN apt-get update && apt-get install -y \
-        libzip-dev zip unzip git curl libpng-dev libonig-dev libxml2-dev \
+        libzip-dev zip unzip git curl libpng-dev libjpeg62-turbo-dev libwebp-dev libfreetype6-dev \
+        libonig-dev libxml2-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
     && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
     && a2enmod rewrite \
     && rm -rf /var/lib/apt/lists/*
+
+# Limites d'envoi alignées sur la validation (pièces justificatives jusqu'à 8 Mo)
+COPY docker/php-uploads.ini /usr/local/etc/php/conf.d/uploads.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

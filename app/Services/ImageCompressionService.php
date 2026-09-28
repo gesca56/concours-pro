@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Drivers\Gd\Driver;
-use Intervention\Image\Encoders\AutoEncoder;
+use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\ImageManager;
 
 /**
@@ -26,7 +26,7 @@ class ImageCompressionService
     }
 
     /**
-     * @return string  Le contenu binaire compressé, prêt à être écrit sur le disque.
+     * @return string  Le contenu JPEG compressé, prêt à être écrit sur le disque.
      */
     public function compresser(UploadedFile $fichier): string
     {
@@ -37,11 +37,11 @@ class ImageCompressionService
         }
 
         $qualite = 82;
-        $encoded = $image->encode(new AutoEncoder(quality: $qualite));
+        $encoded = $image->encode(new JpegEncoder(quality: $qualite));
 
         while (strlen((string) $encoded) > self::TAILLE_CIBLE_OCTETS && $qualite > 30) {
             $qualite -= 10;
-            $encoded = $image->encode(new AutoEncoder(quality: $qualite));
+            $encoded = $image->encode(new JpegEncoder(quality: $qualite));
         }
 
         return (string) $encoded;
