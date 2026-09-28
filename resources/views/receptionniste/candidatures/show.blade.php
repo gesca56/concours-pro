@@ -33,7 +33,10 @@
                 @forelse ($candidature->documents as $document)
                     <div class="py-3 border-b border-gray-100 last:border-0 space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700">{{ $document->nom_original }} <span class="text-gray-400">({{ ucfirst(str_replace('_', ' ', $document->type)) }})</span></span>
+                            <span class="text-sm text-gray-700">
+                                <a href="{{ route('documents.fichier', $document) }}" target="_blank" class="text-institutionnel hover:text-institutionnel-hover underline">{{ $document->nom_original }}</a>
+                                <span class="text-gray-400">({{ ucfirst(str_replace('_', ' ', $document->type)) }})</span>
+                            </span>
                             <x-statut-badge :statut="$document->statut_verification" />
                         </div>
                         @if ($document->statut_verification === 'en_attente')
@@ -41,7 +44,7 @@
                                   class="flex items-center gap-2" x-data="{ rejet: false }">
                                 @csrf
                                 @method('PATCH')
-                                <button type="submit" name="statut_verification" value="valide"
+                                <button type="submit" name="statut_verification" value="valide" x-show="! rejet"
                                         class="px-3 py-1 bg-emerald-600 text-white text-xs rounded-md font-semibold hover:bg-emerald-700">
                                     {{ __('Valider') }}
                                 </button>
@@ -77,7 +80,7 @@
                     </p>
                 @else
                     @php
-                        $toutesValidees = $candidature->documents->isNotEmpty() && $candidature->documents->every(fn ($d) => $d->statut_verification === 'valide');
+                        $toutesValidees = $candidature->piecesVerifiees();
                     @endphp
                     <form method="POST" action="{{ route('receptionniste.candidatures.visite-medicale', $candidature) }}">
                         @csrf
@@ -86,7 +89,7 @@
                             {{ __('Programmer la visite médicale') }}
                         </button>
                         @unless ($toutesValidees)
-                            <p class="text-xs text-gray-500 mt-2">{{ __('Toutes les pièces doivent être validées au préalable.') }}</p>
+                            <p class="text-xs text-gray-500 mt-2">{{ __('Vérifiez toutes les pièces en attente (au moins une doit être validée).') }}</p>
                         @endunless
                     </form>
                 @endif

@@ -67,7 +67,7 @@ class WorkflowRolesTest extends TestCase
         $response = $this->actingAs($receptionniste)
             ->post(route('receptionniste.candidatures.visite-medicale', $candidature));
 
-        $response->assertStatus(422);
+        $response->assertRedirect()->assertSessionHas('error');
         $this->assertNull($candidature->fresh()->visite_medicale_programmee_le);
     }
 
@@ -142,7 +142,7 @@ class WorkflowRolesTest extends TestCase
             'note_totale' => 18,
         ]);
 
-        $response->assertStatus(422);
+        $response->assertRedirect()->assertSessionHas('error');
         $this->assertEquals(12, $candidature->fresh()->note_totale);
     }
 
@@ -173,6 +173,6 @@ class WorkflowRolesTest extends TestCase
 
         $response = $this->actingAs($admin)->post(route('administration.concours.anonymat', $concours));
 
-        $response->assertStatus(422);
+        $response->assertRedirect()->assertSessionHas('error');
     }
 }

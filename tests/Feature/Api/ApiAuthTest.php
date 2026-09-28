@@ -16,6 +16,7 @@ class ApiAuthTest extends TestCase
         $response = $this->postJson('/api/register', [
             'name' => 'Nouveau Candidat',
             'email' => 'nouveau@example.com',
+            'date_naissance' => '2004-05-12',
             'password' => 'password123',
         ]);
 

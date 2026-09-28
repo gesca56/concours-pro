@@ -21,6 +21,12 @@ class DocumentService
 
     public function deposer(Candidature $candidature, UploadedFile $fichier, string $type): Document
     {
+        abort_if(
+            $candidature->visite_medicale_programmee_le !== null,
+            422,
+            'Votre dossier a déjà été vérifié : les pièces ne peuvent plus être modifiées.'
+        );
+
         $extension = strtolower($fichier->getClientOriginalExtension() ?: (string) $fichier->extension());
         $contenu = null;
 

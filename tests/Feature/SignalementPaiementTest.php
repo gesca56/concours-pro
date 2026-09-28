@@ -89,7 +89,7 @@ class SignalementPaiementTest extends TestCase
             'message' => 'Deuxième tentative.',
         ]);
 
-        $response->assertStatus(422);
+        $response->assertRedirect()->assertSessionHas('error');
         $this->assertSame(1, $paiement->signalements()->count());
     }
 

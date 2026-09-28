@@ -24,6 +24,18 @@
         </div>
 
         <div>
+            <x-input-label for="date_naissance" :value="__('Date de naissance')" />
+            <x-text-input id="date_naissance" name="date_naissance" type="date" class="mt-1 block w-full" :value="old('date_naissance', $user->date_naissance?->toDateString())" max="{{ now()->toDateString() }}" autocomplete="bday" />
+            <x-input-error class="mt-2" :messages="$errors->get('date_naissance')" />
+        </div>
+
+        <div>
+            <x-input-label for="telephone" :value="__('Téléphone')" />
+            <x-text-input id="telephone" name="telephone" type="tel" class="mt-1 block w-full" :value="old('telephone', $user->telephone)" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('telephone')" />
+        </div>
+
+        <div>
             <x-input-label for="email" :value="__('Email')" />
             <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />

@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,5 +25,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Règle métier refusée (abort 422) sur le site : on revient à la page
+        // précédente avec le message, plutôt qu'une page d'erreur brute.
+        $exceptions->render(function (HttpException $e, Request $request) {
+            if ($e->getStatusCode() === 422 && ! $request->expectsJson()) {
+                return back()->with('error', $e->getMessage());
+            }
+        });
     })->create();

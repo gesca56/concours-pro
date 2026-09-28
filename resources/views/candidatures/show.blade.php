@@ -53,14 +53,22 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-medium text-gray-900 mb-4">{{ __('Pièces justificatives') }}</h3>
                 @forelse ($candidature->documents as $document)
-                    <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                        <span class="text-sm text-gray-700">{{ $document->nom_original }}</span>
-                        <x-statut-badge :statut="$document->statut_verification" />
+                    <div class="py-2 border-b border-gray-100 last:border-0">
+                        <div class="flex items-center justify-between">
+                            <a href="{{ route('documents.fichier', $document) }}" target="_blank" class="text-sm text-institutionnel hover:text-institutionnel-hover underline">{{ $document->nom_original }}</a>
+                            <x-statut-badge :statut="$document->statut_verification" />
+                        </div>
+                        @if ($document->statut_verification === 'rejete' && $document->motif_rejet)
+                            <p class="text-xs text-red-600 mt-1">{{ __('Motif du rejet :') }} {{ $document->motif_rejet }} — {{ __('déposez une nouvelle pièce ci-dessous.') }}</p>
+                        @endif
                     </div>
                 @empty
                     <p class="text-sm text-gray-500">{{ __('Aucun document déposé.') }}</p>
                 @endforelse
 
+                @if ($candidature->visite_medicale_programmee_le)
+                    <p class="text-xs text-gray-500 mt-4 border-t border-gray-100 pt-4">{{ __('Dossier vérifié : les pièces ne peuvent plus être modifiées.') }}</p>
+                @else
                 <form method="POST" action="{{ route('candidatures.documents.store', $candidature) }}"
                       enctype="multipart/form-data" class="mt-4 space-y-3 border-t border-gray-100 pt-4">
                     @csrf
@@ -83,6 +91,7 @@
                     </div>
                     <x-primary-button>{{ __('Déposer le document') }}</x-primary-button>
                 </form>
+                @endif
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">

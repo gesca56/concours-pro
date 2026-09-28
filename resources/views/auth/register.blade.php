@@ -16,6 +16,20 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
+        <!-- Date de naissance (requise pour l'éligibilité aux concours) -->
+        <div class="mt-4">
+            <x-input-label for="date_naissance" :value="__('Date de naissance')" />
+            <x-text-input id="date_naissance" class="block mt-1 w-full" type="date" name="date_naissance" :value="old('date_naissance')" required max="{{ now()->toDateString() }}" autocomplete="bday" />
+            <x-input-error :messages="$errors->get('date_naissance')" class="mt-2" />
+        </div>
+
+        <!-- Téléphone -->
+        <div class="mt-4">
+            <x-input-label for="telephone" :value="__('Téléphone (facultatif)')" />
+            <x-text-input id="telephone" class="block mt-1 w-full" type="tel" name="telephone" :value="old('telephone')" autocomplete="tel" />
+            <x-input-error :messages="$errors->get('telephone')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />

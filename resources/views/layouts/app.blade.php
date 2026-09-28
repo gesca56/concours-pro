@@ -30,6 +30,14 @@
 
             <!-- Page Content -->
             <main>
+                @if (session('error'))
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+                        <div role="alert" class="p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-800">
+                            {{ session('error') }}
+                        </div>
+                    </div>
+                @endif
+
                 {{ $slot }}
             </main>
         </div>

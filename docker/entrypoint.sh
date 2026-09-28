@@ -11,4 +11,9 @@ fi
 
 php artisan storage:link || true
 
+# Tâches planifiées (clôture automatique des concours expirés) : pas de cron sur Render,
+# on exécute la vérification au démarrage puis le planificateur en arrière-plan.
+php artisan app:cloture-concours-expires || true
+php artisan schedule:work > /dev/null 2>&1 &
+
 exec apache2-foreground

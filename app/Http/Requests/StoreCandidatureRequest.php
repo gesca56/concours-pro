@@ -21,18 +21,19 @@ class StoreCandidatureRequest extends FormRequest
      */
     public function rules(): array
     {
-        $concours = Concours::findOrFail($this->input('concours_id'));
+        $concours = Concours::find($this->input('concours_id'));
 
         return [
             'concours_id' => [
                 'required',
                 Rule::exists('concours', 'id')->where('statut', StatutConcours::Ouvert->value),
+                Rule::unique('candidatures', 'concours_id')->where('user_id', $this->user()->id),
             ],
-            'diplome_candidat' => [
+            'diplome_candidat' => array_filter([
                 'required',
                 'string',
-                new EligibiliteConcours($concours, $this->user()),
-            ],
+                $concours ? new EligibiliteConcours($concours, $this->user()) : null,
+            ]),
         ];
     }
 
@@ -40,6 +41,7 @@ class StoreCandidatureRequest extends FormRequest
     {
         return [
             'concours_id.exists' => "Ce concours n'est pas ouvert aux inscriptions.",
+            'concours_id.unique' => 'Vous avez déjà une candidature pour ce concours.',
         ];
     }
 }

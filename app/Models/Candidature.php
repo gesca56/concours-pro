@@ -58,6 +58,16 @@ class Candidature extends Model
     /**
      * @return HasMany<Paiement, $this>
      */
+    /**
+     * Pièces prêtes pour la visite médicale : aucune en attente et au moins une validée.
+     * Les pièces rejetées sont ignorées (le candidat les remplace par un nouveau dépôt).
+     */
+    public function piecesVerifiees(): bool
+    {
+        return $this->documents->contains('statut_verification', 'valide')
+            && ! $this->documents->contains('statut_verification', 'en_attente');
+    }
+
     public function paiements(): HasMany
     {
         return $this->hasMany(Paiement::class);

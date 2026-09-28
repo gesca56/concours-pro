@@ -8,6 +8,7 @@ use App\Http\Controllers\Administration\DeliberationController;
 use App\Http\Controllers\CandidatureController;
 use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\DocumentFichierController;
 use App\Http\Controllers\Enseignant\DashboardController as EnseignantDashboardController;
 use App\Http\Controllers\Enseignant\NoteController;
 use App\Http\Controllers\Medecin\DashboardController as MedecinDashboardController;
@@ -89,6 +90,11 @@ Route::middleware(['auth', 'verified', 'role:administration'])->prefix('administ
     Route::post('concours/{concours}/statut', [AdminConcoursController::class, 'changerStatut'])->name('concours.statut');
     Route::post('concours/{concours}/anonymat', AnonymatController::class)->name('concours.anonymat');
     Route::post('concours/{concours}/deliberation', DeliberationController::class)->name('concours.deliberation');
+});
+
+// --- Consultation d'une pièce justificative (candidat propriétaire, réception, administration) ---
+Route::middleware(['auth', 'verified', 'role:candidat,receptionniste,administration'])->group(function () {
+    Route::get('documents/{document}/fichier', DocumentFichierController::class)->name('documents.fichier');
 });
 
 // --- Vérification QR Code (réceptionniste + administration) ---

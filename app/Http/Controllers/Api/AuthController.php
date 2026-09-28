@@ -19,7 +19,7 @@ class AuthController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
             'telephone' => ['nullable', 'string', 'max:30'],
-            'date_naissance' => ['nullable', 'date'],
+            'date_naissance' => ['required', 'date', 'before:today', 'after:1900-01-01'],
         ]);
 
         $user = User::create([
@@ -51,6 +51,12 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $data['email'])->firstOrFail();
+
+        if ($user->role !== Role::Candidat) {
+            throw ValidationException::withMessages([
+                'email' => ["L'application mobile est réservée aux candidats. Connectez-vous sur le site web."],
+            ]);
+        }
 
         return response()->json([
             'user' => $user,

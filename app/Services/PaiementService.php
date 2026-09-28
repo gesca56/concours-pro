@@ -22,6 +22,10 @@ class PaiementService
      */
     public function payer(Candidature $candidature, string $type, float $montant, string $numeroTelephone): Paiement
     {
+        if ($candidature->paiements()->where('type', $type)->where('statut', 'valide')->exists()) {
+            throw new PaiementEchoueException('Ce paiement a déjà été effectué pour cette candidature.');
+        }
+
         $paiement = Paiement::create([
             'candidature_id' => $candidature->id,
             'type' => $type,

@@ -27,7 +27,7 @@ class EligibiliteConcours implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if ($this->candidat->date_naissance === null) {
-            $fail('La date de naissance du candidat doit être renseignée avant l\'inscription.');
+            $fail('Renseignez votre date de naissance dans votre profil avant de postuler.');
 
             return;
         }
