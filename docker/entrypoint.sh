@@ -3,6 +3,7 @@ set -e
 
 php artisan config:clear
 php artisan migrate --force
+php artisan db:seed --class=ComptesDemoSeeder --force
 
 if [ "$RUN_SEEDER" = "true" ]; then
     php artisan db:seed --force

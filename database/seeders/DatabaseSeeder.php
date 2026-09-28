@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Enums\Role;
 use App\Enums\StatutConcours;
 use App\Models\Concours;
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -18,19 +16,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $comptes = [
-            ['role' => Role::Candidat, 'name' => 'Candidat Démo', 'email' => 'candidat@sigec.test', 'date_naissance' => now()->subYears(20)],
-            ['role' => Role::Receptionniste, 'name' => 'Réceptionniste Démo', 'email' => 'receptionniste@sigec.test'],
-            ['role' => Role::Medecin, 'name' => 'Médecin Démo', 'email' => 'medecin@sigec.test'],
-            ['role' => Role::Enseignant, 'name' => 'Enseignant Démo', 'email' => 'enseignant@sigec.test'],
-            ['role' => Role::Administration, 'name' => 'Administration Démo', 'email' => 'admin@sigec.test'],
-        ];
-
-        foreach ($comptes as $compte) {
-            User::factory()->create(array_merge([
-                'password' => bcrypt('password'),
-            ], $compte));
-        }
+        $this->call(ComptesDemoSeeder::class);
 
         Concours::create([
             'nom' => 'Concours CAP/PL 2026 — Secrétariat Bureautique',
