@@ -31,5 +31,14 @@ return Application::configure(basePath: dirname(__DIR__))
             if ($e->getStatusCode() === 422 && ! $request->expectsJson()) {
                 return back()->with('error', $e->getMessage());
             }
+
+            // Jeton CSRF expiré (419 « Page Expired ») : formulaire ouvert avant une
+            // déconnexion, dans un autre onglet ou avant un redémarrage du serveur.
+            // On recharge la page avec un nouveau jeton au lieu d'afficher une erreur.
+            if ($e->getStatusCode() === 419 && ! $request->expectsJson()) {
+                return back()
+                    ->withInput($request->except('password', 'password_confirmation', '_token'))
+                    ->with('error', 'Votre session a expiré. Veuillez réessayer.');
+            }
         });
     })->create();

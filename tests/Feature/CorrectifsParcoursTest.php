@@ -195,6 +195,19 @@ class CorrectifsParcoursTest extends TestCase
             ->assertSee('date_naissance');
     }
 
+    public function test_une_session_expiree_recharge_la_connexion_au_lieu_d_une_page_419(): void
+    {
+        // Laravel désactive la vérification CSRF en test : on simule le jeton expiré.
+        \Illuminate\Support\Facades\Route::post('/test-session-expiree', fn () => abort(419))->middleware('web');
+
+        $this->from('/login')
+            ->post('/test-session-expiree', ['email' => 'candidat@sigec.test', 'password' => 'secret'])
+            ->assertRedirect('/login')
+            ->assertSessionHas('error', 'Votre session a expiré. Veuillez réessayer.')
+            ->assertSessionHasInput('email', 'candidat@sigec.test')
+            ->assertSessionMissing('_old_input.password');
+    }
+
     public function test_l_application_mobile_refuse_les_comptes_non_candidats(): void
     {
         User::factory()->create(['role' => Role::Medecin, 'email' => 'medecin@example.com', 'password' => 'password']);
