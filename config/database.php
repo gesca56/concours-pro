@@ -59,9 +59,15 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
+            // Connexion chiffrée (obligatoire chez Aiven) : DB_SSL=true active TLS.
+            // Avec MYSQL_ATTR_SSL_CA (certificat de l'hébergeur), le serveur est vérifié ;
+            // sans, on chiffre avec le magasin système sans vérifier l'autorité.
+            'options' => extension_loaded('pdo_mysql') ? (env('DB_SSL', false) ? [
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA', '/etc/ssl/certs/ca-certificates.crt'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('MYSQL_ATTR_SSL_CA') !== null,
+            ] : array_filter([
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ])) : [],
         ],
 
         'mariadb' => [
@@ -79,9 +85,15 @@ return [
             'prefix_indexes' => true,
             'strict' => true,
             'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
+            // Connexion chiffrée (obligatoire chez Aiven) : DB_SSL=true active TLS.
+            // Avec MYSQL_ATTR_SSL_CA (certificat de l'hébergeur), le serveur est vérifié ;
+            // sans, on chiffre avec le magasin système sans vérifier l'autorité.
+            'options' => extension_loaded('pdo_mysql') ? (env('DB_SSL', false) ? [
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA', '/etc/ssl/certs/ca-certificates.crt'),
+                (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_VERIFY_SERVER_CERT : PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT) => env('MYSQL_ATTR_SSL_CA') !== null,
+            ] : array_filter([
                 (PHP_VERSION_ID >= 80500 ? Mysql::ATTR_SSL_CA : PDO::MYSQL_ATTR_SSL_CA) => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+            ])) : [],
         ],
 
         'pgsql' => [

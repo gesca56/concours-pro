@@ -17,6 +17,12 @@ fi
 php artisan migrate --force
 php artisan db:seed --class=ComptesDemoSeeder --force
 
+# Base neuve (aucun concours) : on crée les sessions de démonstration IPNETP.
+NB_CONCOURS=$(php artisan tinker --execute="echo App\Models\Concours::count();" 2>/dev/null | tail -1)
+if [ "$NB_CONCOURS" = "0" ]; then
+    php artisan db:seed --class=ConcoursIpnetpSeeder --force
+fi
+
 if [ "$RUN_SEEDER" = "true" ]; then
     php artisan db:seed --force
 fi
