@@ -25,7 +25,41 @@
                         <dt class="text-gray-500">{{ __('Diplôme déclaré') }}</dt>
                         <dd class="text-gray-900">{{ $candidature->diplome_candidat }}</dd>
                     </div>
+                    <div>
+                        <dt class="text-gray-500">{{ __('Âge au 1er janvier') }} {{ $candidature->concours->dateReferenceAge()->year }}</dt>
+                        <dd class="text-gray-900">{{ $candidature->candidat->date_naissance ? (int) $candidature->candidat->date_naissance->diffInYears($candidature->concours->dateReferenceAge()).' ans' : '—' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-gray-500">{{ __('N° de dossier') }}</dt>
+                        <dd class="text-gray-900">{{ str_pad($candidature->id, 5, '0', STR_PAD_LEFT) }}</dd>
+                    </div>
                 </dl>
+            </div>
+
+            @php
+                $manquantes = $candidature->piecesManquantes();
+                $cycleIpnetp = config('ipnetp.cycles.'.$candidature->concours->cycle);
+            @endphp
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-medium text-gray-900">{{ __('Complétude du dossier IPNETP') }}</h3>
+                    @if ($cycleIpnetp)
+                        <span class="inline-flex items-center gap-2 text-xs text-gray-600">
+                            <span class="w-5 h-3.5 rounded-sm {{ $cycleIpnetp['chemise']['classe'] }}"></span>{{ __('Chemise') }} {{ strtolower($cycleIpnetp['chemise']['nom']) }}
+                        </span>
+                    @endif
+                </div>
+                @if (count($manquantes) === 0)
+                    <p class="text-sm text-emerald-700 bg-emerald-50 rounded-md p-3">{{ __('Toutes les pièces obligatoires ont été déposées en ligne.') }}</p>
+                @else
+                    <p class="text-sm text-amber-800 bg-amber-50 rounded-md p-3 mb-2">{{ count($manquantes) }} {{ __('pièce(s) obligatoire(s) non déposée(s) :') }}</p>
+                    <ul class="text-sm text-gray-700 list-disc ml-5 space-y-0.5">
+                        @foreach ($manquantes as $piece)
+                            <li>{{ $piece }}</li>
+                        @endforeach
+                    </ul>
+                @endif
+                <p class="text-xs text-gray-500 mt-3">{{ __('Rappel : casier judiciaire de moins de 3 mois, diplôme en copie légalisée, nom identique à la CNI.') }}</p>
             </div>
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">

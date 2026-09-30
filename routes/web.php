@@ -29,6 +29,7 @@ Route::get('/', [PageController::class, 'accueil'])->name('accueil');
 Route::get('/l-institut', [PageController::class, 'institut'])->name('pages.institut');
 Route::get('/les-concours', [PageController::class, 'concours'])->name('pages.concours');
 Route::get('/guide-du-candidat', [PageController::class, 'guide'])->name('pages.guide');
+Route::get('/preparer-le-concours', [PageController::class, 'preparation'])->name('pages.preparation');
 
 Route::get('/dashboard', function () {
     return redirect()->route(match (request()->user()->role) {
@@ -49,9 +50,17 @@ Route::middleware('auth')->group(function () {
 // --- Candidat ---
 Route::middleware(['auth', 'verified', 'role:candidat'])->prefix('candidat')->name('candidat.')->group(function () {
     Route::get('/', function () {
-        $derniereCandidature = request()->user()->candidatures()->with('concours')->latest()->first();
+        $candidatures = request()->user()->candidatures()
+            ->with('concours', 'documents', 'paiements')
+            ->latest()
+            ->get();
+        $idsDejaPostules = $candidatures->pluck('concours_id');
+        $concoursOuverts = \App\Models\Concours::where('statut', \App\Enums\StatutConcours::Ouvert)
+            ->whereNotIn('id', $idsDejaPostules)
+            ->orderBy('date_cloture')
+            ->get();
 
-        return view('candidat.dashboard', compact('derniereCandidature'));
+        return view('candidat.dashboard', compact('candidatures', 'concoursOuverts'));
     })->name('dashboard');
 });
 

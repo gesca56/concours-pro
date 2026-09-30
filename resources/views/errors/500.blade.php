@@ -1,0 +1,1 @@
+@include('errors.cadre', ['code' => 500, 'titre' => 'Un incident est survenu', 'texte' => "Votre dossier n'est pas perdu. Réessayez dans quelques instants ; si le problème persiste, contactez le secrétariat des concours."])

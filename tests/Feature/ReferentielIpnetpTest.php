@@ -77,6 +77,31 @@ class ReferentielIpnetpTest extends TestCase
         $this->assertStringContainsString('1 janvier 2026', $this->erreurs($concours, $tropAge, 'BTS')[0]);
     }
 
+    public function test_page_preparation_connexion_et_erreur_404_en_francais(): void
+    {
+        $this->get('/preparer-le-concours')->assertOk()->assertSee('Simulez votre moyenne');
+        $this->get('/login')->assertOk()->assertSee('Se connecter')->assertDontSee('Remember me');
+        $this->get('/register')->assertOk()->assertSee('Nom et prénoms');
+        $this->get('/page-inexistante')->assertNotFound()->assertSee('Page introuvable');
+    }
+
+    public function test_le_tableau_de_bord_indique_la_prochaine_etape(): void
+    {
+        $concours = $this->concours();
+        $candidat = User::factory()->create(['role' => \App\Enums\Role::Candidat, 'date_naissance' => now()->subYears(25)]);
+        $candidature = $candidat->candidatures()->create([
+            'concours_id' => $concours->id, 'diplome_candidat' => 'BTS', 'statut' => 'en_attente', 'date_soumission' => now(),
+        ]);
+
+        $this->actingAs($candidat)->get('/candidat')
+            ->assertOk()
+            ->assertSee("Réglez les frais d'inscription");
+
+        $candidature->paiements()->create(['type' => 'inscription', 'montant' => 25000, 'mode_paiement' => 'mobile_money', 'reference_transaction' => 'T1', 'statut' => 'valide', 'date_paiement' => now()]);
+
+        $this->assertStringStartsWith('Complétez votre dossier (8 pièces', $candidature->fresh()->prochaineEtape()['titre']);
+    }
+
     public function test_les_nouvelles_pieces_du_dossier_sont_acceptees(): void
     {
         $this->assertArrayHasKey('casier_judiciaire', config('ipnetp.types_documents'));

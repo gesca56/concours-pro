@@ -6,6 +6,7 @@
         ['route' => 'pages.institut', 'libelle' => "L'IPNETP"],
         ['route' => 'pages.concours', 'libelle' => 'Les concours'],
         ['route' => 'pages.guide', 'libelle' => 'Guide du candidat'],
+        ['route' => 'pages.preparation', 'libelle' => 'Préparer le concours'],
     ];
 @endphp
 

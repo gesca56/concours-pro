@@ -1,4 +1,9 @@
 <x-guest-layout>
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-marine">Connexion</h2>
+        <p class="text-sm text-gray-500">Accédez à votre dossier de candidature ou à votre espace de service.</p>
+    </div>
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
@@ -43,5 +48,10 @@
                 {{ __('Log in') }}
             </x-primary-button>
         </div>
+
+        <p class="mt-6 pt-6 border-t border-gray-100 text-sm text-center text-gray-600">
+            Première candidature ?
+            <a href="{{ route('register') }}" class="font-semibold text-institutionnel hover:text-institutionnel-hover">Créer mon compte candidat</a>
+        </p>
     </form>
 </x-guest-layout>

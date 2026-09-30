@@ -1,0 +1,1 @@
+@include('errors.cadre', ['code' => 403, 'titre' => 'Accès réservé', 'texte' => "Cet espace est réservé à un autre profil (candidat, réception, service médical, correcteurs ou direction des concours). Connectez-vous avec le compte approprié."])

@@ -36,6 +36,11 @@ class PageController extends Controller
         return view('pages.guide');
     }
 
+    public function preparation(): View
+    {
+        return view('pages.preparation');
+    }
+
     /**
      * @return \Illuminate\Database\Eloquent\Collection<int, Concours>
      */

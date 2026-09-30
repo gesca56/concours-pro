@@ -1,0 +1,1 @@
+@include('errors.cadre', ['code' => 503, 'titre' => 'Plateforme en maintenance', 'texte' => "Concours-Pro est momentanément indisponible pour une mise à jour. Les délais d'inscription ne sont pas affectés : revenez dans quelques minutes."])

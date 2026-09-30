@@ -72,4 +72,69 @@ class Candidature extends Model
     {
         return $this->hasMany(Paiement::class);
     }
+
+    public function paiementValide(string $type): bool
+    {
+        return $this->paiements->contains(fn ($p) => $p->type === $type && $p->statut === 'valide');
+    }
+
+    /**
+     * Pièces du dossier IPNETP attendues en ligne et pas encore déposées
+     * (hors pièces rejetées, qui doivent être redéposées).
+     * L'attestation d'expérience n'est exigée que pour certains concours.
+     *
+     * @return list<string> libellés des pièces manquantes
+     */
+    public function piecesManquantes(): array
+    {
+        $deposees = $this->documents->where('statut_verification', '!=', 'rejete')->pluck('type')->all();
+
+        return collect(config('ipnetp.pieces'))
+            ->filter(fn ($p) => $p['type'] && $p['type'] !== 'attestation_experience' && ! in_array($p['type'], $deposees, true))
+            ->pluck('libelle')
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Les six étapes du parcours IPNETP et leur état pour ce dossier.
+     *
+     * @return list<array{libelle: string, faite: bool}>
+     */
+    public function etapesParcours(): array
+    {
+        $delibere = in_array($this->statut, ['admise', 'recalee'], true) && $this->note_totale !== null;
+
+        return [
+            ['libelle' => 'Préinscription', 'faite' => true],
+            ['libelle' => 'Paiements', 'faite' => $this->paiementValide('inscription') && $this->paiementValide('visite_medicale')],
+            ['libelle' => 'Pièces vérifiées', 'faite' => $this->visite_medicale_programmee_le !== null],
+            ['libelle' => 'Visite médicale', 'faite' => $this->aptitude_medicale === 'apte'],
+            ['libelle' => 'Épreuves', 'faite' => $this->note_totale !== null],
+            ['libelle' => 'Résultats', 'faite' => $delibere],
+        ];
+    }
+
+    /**
+     * Ce que le candidat doit faire (ou attendre) maintenant.
+     *
+     * @return array{ton: string, titre: string, texte: string, action?: string, lien?: string}
+     */
+    public function prochaineEtape(): array
+    {
+        $dossier = route('candidatures.show', $this);
+
+        return match (true) {
+            $this->statut === 'admise' => ['ton' => 'succes', 'titre' => 'Félicitations, vous êtes admis(e) !', 'texte' => "Vous intégrez l'IPNETP comme élève-professeur. Surveillez les communiqués pour la date de rentrée et les formalités d'inscription."],
+            $this->statut === 'recalee' && $this->aptitude_medicale === 'inapte' => ['ton' => 'echec', 'titre' => 'Candidature non retenue (visite médicale)', 'texte' => $this->motif_inaptitude ?: "Le service médical vous a déclaré inapte. Rapprochez-vous du secrétariat des concours pour toute contestation."],
+            in_array($this->statut, ['recalee', 'rejetee', 'inelegible'], true) => ['ton' => 'echec', 'titre' => 'Candidature non retenue', 'texte' => "Votre candidature n'a pas été retenue pour cette session. Vous pourrez vous présenter à la prochaine session si vous remplissez toujours les conditions."],
+            ! $this->paiementValide('inscription') => ['ton' => 'action', 'titre' => "Réglez les frais d'inscription", 'texte' => 'Les '.number_format($this->concours->frais_inscription, 0, ',', ' ')." FCFA d'inscription confirment votre préinscription.", 'action' => 'Payer en Mobile Money', 'lien' => $dossier],
+            count($manquantes = $this->piecesManquantes()) > 0 => ['ton' => 'action', 'titre' => 'Complétez votre dossier ('.count($manquantes).' pièce'.(count($manquantes) > 1 ? 's' : '').' manquante'.(count($manquantes) > 1 ? 's' : '').')', 'texte' => 'À déposer : '.implode(', ', array_slice($manquantes, 0, 3)).(count($manquantes) > 3 ? '…' : '.'), 'action' => 'Déposer mes pièces', 'lien' => $dossier],
+            ! $this->paiementValide('visite_medicale') => ['ton' => 'action', 'titre' => 'Réglez les frais de visite médicale', 'texte' => 'Ce second paiement débloque votre convocation et la programmation de la visite médicale.', 'action' => 'Payer la visite médicale', 'lien' => $dossier],
+            $this->visite_medicale_programmee_le === null => ['ton' => 'attente', 'titre' => 'Dossier en cours de vérification', 'texte' => "Le secrétariat contrôle vos pièces une à une. Pensez à déposer aussi votre dossier physique, dans la chemise de couleur de votre concours."],
+            $this->aptitude_medicale === 'en_attente' => ['ton' => 'action', 'titre' => 'Présentez-vous à la visite médicale', 'texte' => 'Programmée le '.$this->visite_medicale_programmee_le->translatedFormat('l j F Y à H\hi').'. Munissez-vous de votre pièce d\'identité et de votre convocation.'],
+            $this->note_totale === null => ['ton' => 'action', 'titre' => 'Préparez les épreuves écrites', 'texte' => ($this->concours->date_concours ? 'Écrits le '.$this->concours->date_concours->translatedFormat('j F Y').'. ' : '')."Composition française (coef. 3) et épreuve de spécialité (coef. 5). Présentez votre convocation à QR Code à l'entrée.", 'action' => 'Conseils de préparation', 'lien' => route('pages.preparation')],
+            default => ['ton' => 'attente', 'titre' => 'Copies corrigées, délibération en cours', 'texte' => 'Le jury délibère. Les résultats apparaîtront ici dès leur publication.'],
+        };
+    }
 }

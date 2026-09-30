@@ -1,0 +1,1 @@
+@include('errors.cadre', ['code' => 404, 'titre' => 'Page introuvable', 'texte' => "Cette page n'existe pas ou a été déplacée. Les concours ouverts et le guide du candidat restent accessibles depuis l'accueil."])
