@@ -50,12 +50,54 @@
                 </div>
             </div>
 
+            @php
+                $cycleIpnetp = config('ipnetp.cycles.'.$candidature->concours->cycle);
+                $typesDeposes = $candidature->documents->where('statut_verification', '!=', 'rejete')->pluck('type')->all();
+                $piecesEnLigne = collect(config('ipnetp.pieces'))->whereNotNull('type');
+                $nbDeposees = $piecesEnLigne->filter(fn ($p) => in_array($p['type'], $typesDeposes, true))->count();
+            @endphp
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6" x-data="{ ouvert: {{ $nbDeposees < $piecesEnLigne->count() ? 'true' : 'false' }} }">
+                <button type="button" @click="ouvert = !ouvert" class="w-full flex items-center justify-between text-left">
+                    <div>
+                        <h3 class="font-medium text-gray-900">{{ __('Dossier IPNETP') }}</h3>
+                        <p class="text-xs text-gray-500">{{ $nbDeposees }} / {{ $piecesEnLigne->count() }} {{ __('pièces déposées en ligne') }}</p>
+                    </div>
+                    <span class="text-xs text-institutionnel" x-text="ouvert ? 'Masquer' : 'Afficher'"></span>
+                </button>
+                <div class="mt-3 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                    <div class="h-full bg-emerald-500" style="width: {{ $piecesEnLigne->count() ? round($nbDeposees / $piecesEnLigne->count() * 100) : 0 }}%"></div>
+                </div>
+                <div x-show="ouvert" x-cloak class="mt-4 space-y-4">
+                    <ul class="text-sm space-y-1.5">
+                        @foreach (config('ipnetp.pieces') as $piece)
+                            @php $ok = $piece['type'] && in_array($piece['type'], $typesDeposes, true); @endphp
+                            <li class="flex items-start gap-2">
+                                <span class="mt-0.5 w-4 h-4 shrink-0 rounded-full flex items-center justify-center text-[10px] {{ $ok ? 'bg-emerald-500 text-white' : 'border border-gray-300' }}">{!! $ok ? '&#10003;' : '' !!}</span>
+                                <span class="{{ $ok ? 'text-gray-500' : 'text-gray-800' }}">{{ $piece['libelle'] }}
+                                    @if ($piece['note'])<span class="text-xs text-gray-400">— {{ $piece['note'] }}</span>@endif
+                                    @unless ($piece['type'])<span class="text-xs text-gray-400">({{ __('au dépôt physique') }})</span>@endunless
+                                </span>
+                            </li>
+                        @endforeach
+                    </ul>
+                    @if ($cycleIpnetp)
+                        <div class="flex items-center gap-3 p-3 rounded-md bg-gray-50 text-sm">
+                            <span class="w-8 h-6 rounded shrink-0 {{ $cycleIpnetp['chemise']['classe'] }}"></span>
+                            <p class="text-gray-700">{{ __('Dossier physique à remettre dans une chemise') }} <strong>{{ strtolower($cycleIpnetp['chemise']['nom']) }}</strong> {{ __('au') }} {{ config('ipnetp.institut.secretariat') }}.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 <h3 class="font-medium text-gray-900 mb-4">{{ __('Pièces justificatives') }}</h3>
                 @forelse ($candidature->documents as $document)
                     <div class="py-2 border-b border-gray-100 last:border-0">
                         <div class="flex items-center justify-between">
-                            <a href="{{ route('documents.fichier', $document) }}" target="_blank" class="text-sm text-institutionnel hover:text-institutionnel-hover underline">{{ $document->nom_original }}</a>
+                            <div class="min-w-0">
+                                <a href="{{ route('documents.fichier', $document) }}" target="_blank" class="text-sm text-institutionnel hover:text-institutionnel-hover underline break-all">{{ $document->nom_original }}</a>
+                                <p class="text-xs text-gray-400">{{ $document->libelleType() }}</p>
+                            </div>
                             <x-statut-badge :statut="$document->statut_verification" />
                         </div>
                         @if ($document->statut_verification === 'rejete' && $document->motif_rejet)
@@ -75,12 +117,9 @@
                     <div>
                         <x-input-label for="type" :value="__('Type de document')" />
                         <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-                            <option value="acte_naissance">{{ __('Acte de naissance') }}</option>
-                            <option value="diplome">{{ __('Diplôme') }}</option>
-                            <option value="photo_identite">{{ __("Photo d'identité") }}</option>
-                            <option value="certificat_medical">{{ __('Certificat médical') }}</option>
-                            <option value="piece_identite">{{ __("Pièce d'identité") }}</option>
-                            <option value="autre">{{ __('Autre') }}</option>
+                            @foreach (config('ipnetp.types_documents') as $valeur => $libelle)
+                                <option value="{{ $valeur }}" @selected(old('type') === $valeur)>{{ $libelle }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div>

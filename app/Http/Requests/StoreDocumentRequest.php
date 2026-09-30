@@ -19,9 +19,7 @@ class StoreDocumentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', Rule::in([
-                'acte_naissance', 'diplome', 'photo_identite', 'certificat_medical', 'piece_identite', 'autre',
-            ])],
+            'type' => ['required', Rule::in(array_keys(config('ipnetp.types_documents')))],
             'fichier' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:8192'],
         ];
     }

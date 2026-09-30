@@ -35,7 +35,7 @@
                         <div class="flex items-center justify-between">
                             <span class="text-sm text-gray-700">
                                 <a href="{{ route('documents.fichier', $document) }}" target="_blank" class="text-institutionnel hover:text-institutionnel-hover underline">{{ $document->nom_original }}</a>
-                                <span class="text-gray-400">({{ ucfirst(str_replace('_', ' ', $document->type)) }})</span>
+                                <span class="text-gray-400">({{ $document->libelleType() }})</span>
                             </span>
                             <x-statut-badge :statut="$document->statut_verification" />
                         </div>

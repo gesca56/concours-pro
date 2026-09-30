@@ -18,6 +18,14 @@ class Document extends Model
     ];
 
     /**
+     * Libellé lisible du type de pièce (référentiel config/ipnetp.php).
+     */
+    public function libelleType(): string
+    {
+        return config('ipnetp.types_documents.'.$this->type, ucfirst(str_replace('_', ' ', $this->type)));
+    }
+
+    /**
      * @return BelongsTo<Candidature, $this>
      */
     public function candidature(): BelongsTo

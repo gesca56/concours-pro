@@ -39,16 +39,17 @@
         <x-input-label for="diplome_requis" value="Diplôme requis" />
         <x-text-input id="diplome_requis" name="diplome_requis" type="text" class="mt-1 block w-full" :value="old('diplome_requis', $c?->diplome_requis)" required />
         <x-input-error :messages="$errors->get('diplome_requis')" class="mt-2" />
+        <p class="mt-1 text-xs text-gray-500">Plusieurs diplômes admis : séparez-les par une virgule (ex. « Licence professionnelle, BTS, DUT »).</p>
     </div>
 
     <div>
         <x-input-label for="age_min" value="Âge minimum" />
-        <x-text-input id="age_min" name="age_min" type="number" class="mt-1 block w-full" :value="old('age_min', $c?->age_min)" />
+        <x-text-input id="age_min" name="age_min" type="number" class="mt-1 block w-full" :value="old('age_min', $c?->age_min ?? config('ipnetp.age_min'))" />
     </div>
 
     <div>
         <x-input-label for="age_max" value="Âge maximum" />
-        <x-text-input id="age_max" name="age_max" type="number" class="mt-1 block w-full" :value="old('age_max', $c?->age_max)" />
+        <x-text-input id="age_max" name="age_max" type="number" class="mt-1 block w-full" :value="old('age_max', $c?->age_max ?? config('ipnetp.age_max'))" />
         <x-input-error :messages="$errors->get('age_max')" class="mt-2" />
     </div>
 

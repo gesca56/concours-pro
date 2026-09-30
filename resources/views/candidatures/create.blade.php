@@ -7,8 +7,17 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            @php
+                // Données enrichies du référentiel IPNETP pour l'assistant (diplômes admis, chemise, année de référence).
+                $concoursParId = $concoursOuverts->keyBy('id')->map(fn ($c) => $c->toArray() + [
+                    'diplomes_admis' => $c->diplomesAdmis(),
+                    'intitule' => config('ipnetp.cycles.'.$c->cycle.'.intitule'),
+                    'chemise' => config('ipnetp.cycles.'.$c->cycle.'.chemise'),
+                    'annee_reference' => $c->dateReferenceAge()->year,
+                ]);
+            @endphp
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6"
-                 x-data="candidatureWizard({{ $concoursOuverts->keyBy('id')->toJson() }})">
+                 x-data="candidatureWizard({{ $concoursParId->toJson() }})">
 
                 <!-- Fil d'étapes -->
                 <ol class="flex items-center w-full mb-8">
@@ -31,21 +40,27 @@
                     <!-- Étape 1 : Concours -->
                     <div x-show="step === 0" x-cloak class="space-y-4">
                         <x-input-label for="concours_id" :value="__('Choisissez un concours')" />
-                        <select id="concours_id" name="concours_id" x-model="concoursId"
+                        <select id="concours_id" name="concours_id" x-model="concoursId" @change="diplome = ''"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
                             <option value="">{{ __('— Choisir un concours —') }}</option>
                             @foreach ($concoursOuverts as $c)
-                                <option value="{{ $c->id }}">{{ $c->nom }} ({{ $c->cycle }} · {{ $c->filiere }})</option>
+                                <option value="{{ $c->id }}" @selected(old('concours_id') == $c->id)>{{ $c->nom }} ({{ $c->cycle }} · {{ $c->filiere }})</option>
                             @endforeach
                         </select>
                         <x-input-error :messages="$errors->get('concours_id')" class="mt-2" />
 
                         <template x-if="concoursChoisi">
                             <div class="text-sm bg-institutionnel/5 border border-institutionnel/20 rounded-md p-4 space-y-1">
-                                <p><span class="text-gray-500">{{ __('Diplôme requis :') }}</span> <span x-text="concoursChoisi.diplome_requis"></span></p>
-                                <p><span class="text-gray-500">{{ __('Tranche d\'âge :') }}</span> <span x-text="concoursChoisi.age_min + ' - ' + concoursChoisi.age_max + ' ans'"></span></p>
+                                <p class="font-medium text-marine" x-text="concoursChoisi.intitule"></p>
+                                <p><span class="text-gray-500">{{ __('Diplômes admis :') }}</span> <span x-text="concoursChoisi.diplomes_admis.join(', ')"></span></p>
+                                <p><span class="text-gray-500">{{ __('Tranche d\'âge :') }}</span> <span x-text="concoursChoisi.age_min + ' - ' + concoursChoisi.age_max + ' ans au 1er janvier ' + concoursChoisi.annee_reference"></span></p>
                                 <p><span class="text-gray-500">{{ __('Frais d\'inscription :') }}</span> <span x-text="Number(concoursChoisi.frais_inscription).toLocaleString('fr-FR') + ' FCFA'"></span></p>
                                 <p><span class="text-gray-500">{{ __('Visite médicale :') }}</span> <span x-text="Number(concoursChoisi.frais_visite_medicale).toLocaleString('fr-FR') + ' FCFA'"></span></p>
+                                <p x-show="concoursChoisi.chemise" class="flex items-center gap-2 pt-1">
+                                    <span class="w-3 h-3 rounded-sm" :class="concoursChoisi.chemise?.classe"></span>
+                                    <span class="text-gray-500">{{ __('Dossier physique en chemise') }}</span>
+                                    <span x-text="concoursChoisi.chemise?.nom.toLowerCase()"></span>
+                                </p>
                             </div>
                         </template>
 
@@ -60,13 +75,17 @@
                     <!-- Étape 2 : Diplôme -->
                     <div x-show="step === 1" x-cloak class="space-y-4">
                         <x-input-label for="diplome_candidat" :value="__('Votre diplôme')" />
-                        <x-text-input id="diplome_candidat" name="diplome_candidat" type="text" class="mt-1 block w-full"
-                                      x-model="diplome" :value="old('diplome_candidat')" required />
-                        <p class="text-xs text-gray-500">{{ __('Doit correspondre exactement au diplôme requis par le concours choisi.') }}</p>
-
-                        <p x-show="concoursChoisi && diplome && diplome.trim().toLowerCase() !== concoursChoisi.diplome_requis.trim().toLowerCase()"
-                           x-cloak class="text-sm text-amber-700 bg-amber-50 rounded-md p-3">
-                            {{ __('Attention : ce diplôme ne correspond pas au diplôme requis. La demande sera vérifiée côté serveur avant validation.') }}
+                        <select id="diplome_candidat" name="diplome_candidat" x-model="diplome"
+                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                            <option value="">{{ __('— Choisir votre diplôme —') }}</option>
+                            <template x-for="d in (concoursChoisi?.diplomes_admis ?? [])" :key="d">
+                                <option :value="d" x-text="d" :selected="d === diplome"></option>
+                            </template>
+                        </select>
+                        <p class="text-xs text-gray-500">{{ __('Diplôme obtenu dans la spécialité du concours ; une copie légalisée sera exigée dans le dossier.') }}</p>
+                        <p class="text-xs text-gray-500">
+                            {{ __('Votre diplôme n\'apparaît pas ? Ce concours ne vous est pas ouvert, consultez') }}
+                            <a href="{{ route('pages.concours') }}" target="_blank" class="text-institutionnel underline">{{ __('les quatre concours') }}</a>.
                         </p>
 
                         <x-input-error :messages="$errors->get('diplome_candidat')" class="mt-2" />
@@ -89,6 +108,7 @@
                             <div class="flex justify-between"><dt class="text-gray-500">{{ __('Concours') }}</dt><dd x-text="concoursChoisi?.nom"></dd></div>
                             <div class="flex justify-between"><dt class="text-gray-500">{{ __('Diplôme déclaré') }}</dt><dd x-text="diplome"></dd></div>
                         </dl>
+                        <p class="text-xs text-gray-500">{{ __('En soumettant, vous certifiez l\'exactitude de ces informations. Toute fausse déclaration entraîne l\'annulation de la candidature, même après admission.') }}</p>
 
                         <div class="flex justify-between pt-4">
                             <button type="button" @click="step = 1" class="text-xs uppercase tracking-widest text-gray-500 hover:text-gray-700">

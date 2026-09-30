@@ -13,6 +13,7 @@ use App\Http\Controllers\Enseignant\DashboardController as EnseignantDashboardCo
 use App\Http\Controllers\Enseignant\NoteController;
 use App\Http\Controllers\Medecin\DashboardController as MedecinDashboardController;
 use App\Http\Controllers\Medecin\ValidationController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\PaiementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Receptionniste\CandidatureController as ReceptionnisteCandidatureController;
@@ -24,9 +25,10 @@ use App\Http\Controllers\SignalementPaiementController;
 use App\Http\Controllers\VerificationQrController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [PageController::class, 'accueil'])->name('accueil');
+Route::get('/l-institut', [PageController::class, 'institut'])->name('pages.institut');
+Route::get('/les-concours', [PageController::class, 'concours'])->name('pages.concours');
+Route::get('/guide-du-candidat', [PageController::class, 'guide'])->name('pages.guide');
 
 Route::get('/dashboard', function () {
     return redirect()->route(match (request()->user()->role) {

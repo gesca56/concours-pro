@@ -1,157 +1,186 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@php
+    $cycles = config('ipnetp.cycles');
+    $parcours = [
+        ['t' => 'Préinscription en ligne', 'd' => 'Créez votre compte, choisissez votre concours : l\'âge (au 1er janvier) et le diplôme sont contrôlés automatiquement.'],
+        ['t' => 'Paiement Mobile Money', 'd' => 'Réglez les 25 000 FCFA d\'inscription puis la visite médicale, et téléchargez vos reçus.'],
+        ['t' => 'Dépôt du dossier', 'd' => 'Déposez vos pièces en ligne puis le dossier physique au secrétariat, dans la chemise de couleur de votre concours.'],
+        ['t' => 'Vérification & visite médicale', 'd' => 'Le secrétariat contrôle chaque pièce, puis le médecin se prononce sur votre aptitude.'],
+        ['t' => 'Écrits sous anonymat', 'd' => 'Composition française et spécialité, corrigées sous numéro d\'anonymat, avec convocation à QR Code.'],
+        ['t' => 'Oral & résultats', 'd' => 'Entretien devant jury pour les admissibles, puis délibération et publication des admis.'],
+    ];
+@endphp
 
-        <title>{{ config('app.name') }} — Concours de l'IPNETP en ligne</title>
+<x-public-layout>
 
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
+    {{-- Hero --}}
+    <section class="relative overflow-hidden bg-fond">
+        <div class="absolute inset-0 bg-gradient-to-br from-institutionnel/5 via-transparent to-transparent"></div>
+        <div class="absolute -top-32 -right-32 w-96 h-96 bg-institutionnel/10 rounded-full blur-3xl"></div>
+        <div class="absolute top-40 -left-24 w-72 h-72 bg-marine-light/10 rounded-full blur-3xl"></div>
 
-        @include('partials.pwa')
-
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body class="font-sans antialiased text-gray-900">
-
-        {{-- Header --}}
-        <header class="sticky top-0 z-20 bg-white/80 backdrop-blur border-b border-gray-100">
-            <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-                <x-logo />
-                <nav class="hidden sm:flex items-center gap-8 text-sm font-medium text-gray-600">
-                    <a href="#fonctionnalites" class="hover:text-marine">Fonctionnalités</a>
-                    <a href="#comment-ca-marche" class="hover:text-marine">Comment ça marche</a>
-                </nav>
-                <div class="flex items-center gap-3">
-                    @auth
-                        <a href="{{ route('dashboard') }}"
-                           class="px-4 py-2 bg-institutionnel text-white rounded-lg text-sm font-semibold hover:bg-institutionnel-hover transition">
-                            Tableau de bord
-                        </a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-marine">
-                            Connexion
-                        </a>
-                        <a href="{{ route('register') }}"
-                           class="px-4 py-2 bg-institutionnel text-white rounded-lg text-sm font-semibold hover:bg-institutionnel-hover transition shadow-sm shadow-institutionnel/30">
-                            Créer un compte
-                        </a>
-                    @endauth
-                </div>
+        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 pt-16 sm:pt-20 pb-16 text-center">
+            <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutionnel/10 text-institutionnel text-xs font-semibold tracking-wide uppercase mb-6">
+                <span class="w-1.5 h-1.5 rounded-full bg-institutionnel {{ $concoursOuverts->isNotEmpty() ? 'animate-pulse' : '' }}"></span>
+                {{ $concoursOuverts->isNotEmpty() ? 'Session '.now()->year.' · inscriptions ouvertes' : 'Concours directs d\'entrée à l\'IPNETP' }}
+            </span>
+            <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-marine leading-[1.1] mb-6">
+                Devenez professeur de<br class="hidden sm:block"> l'<span class="text-institutionnel">enseignement technique</span>
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+                Préinscrivez-vous aux concours CAP/PL, CAP/PC, CAP/IFPB et CAP/IAFPB de l'IPNETP,
+                payez en Mobile Money, suivez chaque étape de votre dossier et recevez une
+                convocation sécurisée par QR Code — sans vous déplacer avant le dépôt final.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                @guest
+                    <a href="{{ route('register') }}"
+                       class="w-full sm:w-auto px-7 py-3.5 bg-institutionnel text-white rounded-lg font-semibold hover:bg-institutionnel-hover transition shadow-lg shadow-institutionnel/30">
+                        Commencer ma préinscription
+                    </a>
+                @else
+                    <a href="{{ route('dashboard') }}"
+                       class="w-full sm:w-auto px-7 py-3.5 bg-institutionnel text-white rounded-lg font-semibold hover:bg-institutionnel-hover transition shadow-lg shadow-institutionnel/30">
+                        Accéder à mon tableau de bord
+                    </a>
+                @endguest
+                <a href="{{ route('pages.guide') }}"
+                   class="w-full sm:w-auto px-7 py-3.5 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold hover:border-gray-300 hover:bg-gray-50 transition">
+                    Lire le guide du candidat
+                </a>
             </div>
-        </header>
+        </div>
 
-        {{-- Hero --}}
-        <section class="relative overflow-hidden bg-fond">
-            <div class="absolute inset-0 bg-gradient-to-br from-institutionnel/5 via-transparent to-transparent"></div>
-            <div class="absolute -top-32 -right-32 w-96 h-96 bg-institutionnel/10 rounded-full blur-3xl"></div>
-            <div class="absolute top-40 -left-24 w-72 h-72 bg-marine-light/10 rounded-full blur-3xl"></div>
-
-            <div class="relative max-w-4xl mx-auto px-6 pt-20 pb-24 text-center">
-                <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-institutionnel/10 text-institutionnel text-xs font-semibold tracking-wide uppercase mb-6">
-                    Inscriptions en ligne
-                </span>
-                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-marine leading-[1.1] mb-6">
-                    Le concours d'entrée<br class="hidden sm:block"> qui se joue <span class="text-institutionnel">sans la queue</span>
-                </h1>
-                <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-                    Inscrivez-vous en quelques minutes, payez en Mobile Money, suivez votre dossier en
-                    temps réel et téléchargez votre convocation sécurisée par QR Code — pour tous les
-                    concours CAP/PL, CAP/PC, CAP/IFPB et CAP/IAFPB.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    @guest
-                        <a href="{{ route('register') }}"
-                           class="w-full sm:w-auto px-7 py-3.5 bg-institutionnel text-white rounded-lg font-semibold hover:bg-institutionnel-hover transition shadow-lg shadow-institutionnel/30">
-                            Créer mon compte candidat
-                        </a>
-                        <a href="{{ route('login') }}"
-                           class="w-full sm:w-auto px-7 py-3.5 bg-white border border-gray-200 text-gray-700 rounded-lg font-semibold hover:border-gray-300 hover:bg-gray-50 transition">
-                            J'ai déjà un compte
-                        </a>
-                    @else
-                        <a href="{{ route('dashboard') }}"
-                           class="px-7 py-3.5 bg-institutionnel text-white rounded-lg font-semibold hover:bg-institutionnel-hover transition shadow-lg shadow-institutionnel/30">
-                            Accéder à mon tableau de bord
-                        </a>
-                    @endguest
-                </div>
-            </div>
-        </section>
-
-        {{-- Feature strip --}}
-        <section id="fonctionnalites" class="max-w-6xl mx-auto px-6 py-20">
-            <div class="text-center mb-14">
-                <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-3">Tout le parcours, une seule plateforme</h2>
-                <p class="text-gray-500 max-w-xl mx-auto">De l'inscription à la délibération, chaque étape est numérisée et sécurisée.</p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @php
-                    $features = [
-                        ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'titre' => 'Éligibilité vérifiée', 'texte' => 'Contrôle automatique de l\'âge et du diplôme requis avant toute inscription.'],
-                        ['icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titre' => 'Paiement Mobile Money', 'texte' => 'Frais d\'inscription et visite médicale réglés en ligne, en toute sécurité.'],
-                        ['icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4', 'titre' => 'Suivi en temps réel', 'texte' => 'Une timeline claire pour voir où en est son dossier, à chaque étape.'],
-                        ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titre' => 'Convocation anti-fraude', 'texte' => 'QR Code unique vérifié par les surveillants le jour du concours.'],
-                    ];
-                @endphp
-
-                @foreach ($features as $f)
-                    <div class="p-6 rounded-2xl border border-gray-100 bg-white hover:shadow-lg hover:-translate-y-0.5 transition">
-                        <div class="w-11 h-11 rounded-xl bg-institutionnel/10 flex items-center justify-center mb-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5.5 h-5.5 text-institutionnel" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $f['icon'] }}" />
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold text-marine mb-1.5">{{ $f['titre'] }}</h3>
-                        <p class="text-sm text-gray-500 leading-relaxed">{{ $f['texte'] }}</p>
+        {{-- Chiffres clés --}}
+        <div class="relative max-w-5xl mx-auto px-4 sm:px-6 pb-16">
+            <dl class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-gray-200 rounded-2xl overflow-hidden border border-gray-200">
+                @foreach ([
+                    ['v' => '4', 'l' => 'concours directs', 'd' => 'du CAP/PL au CAP/IAFPB'],
+                    ['v' => '18 – 39 ans', 'l' => 'au 1er janvier', 'd' => 'nationalité ivoirienne'],
+                    ['v' => number_format(config('ipnetp.frais_inscription'), 0, ',', ' ').' F', 'l' => "frais d'inscription", 'd' => 'payés en Mobile Money'],
+                    ['v' => '0 F', 'l' => 'de frais de formation', 'd' => 'pour les admis'],
+                ] as $chiffre)
+                    <div class="bg-white p-5 text-center">
+                        <dt class="sr-only">{{ $chiffre['l'] }}</dt>
+                        <dd class="text-2xl font-extrabold text-marine">{{ $chiffre['v'] }}</dd>
+                        <dd class="text-sm font-medium text-gray-700">{{ $chiffre['l'] }}</dd>
+                        <dd class="text-xs text-gray-400 mt-0.5">{{ $chiffre['d'] }}</dd>
                     </div>
                 @endforeach
-            </div>
-        </section>
+            </dl>
+        </div>
+    </section>
 
-        {{-- How it works --}}
-        <section id="comment-ca-marche" class="bg-marine">
-            <div class="max-w-5xl mx-auto px-6 py-20">
-                <h2 class="text-2xl sm:text-3xl font-bold text-white text-center mb-14">Comment ça marche</h2>
-                <div class="grid sm:grid-cols-3 gap-10">
-                    @foreach ([
-                        ['n' => '01', 't' => 'Créez votre compte', 'd' => "Inscrivez-vous en quelques secondes avec votre email."],
-                        ['n' => '02', 't' => 'Choisissez votre concours', 'd' => "Sélectionnez le concours, déposez vos pièces et payez en ligne."],
-                        ['n' => '03', 't' => 'Suivez votre dossier', 'd' => "Recevez votre convocation dès que votre dossier est validé."],
-                    ] as $etape)
-                        <div class="text-center sm:text-left">
-                            <div class="text-institutionnel font-mono text-sm font-bold mb-2">{{ $etape['n'] }}</div>
-                            <h3 class="text-white font-semibold text-lg mb-2">{{ $etape['t'] }}</h3>
+    {{-- Concours ouverts --}}
+    <section id="concours-ouverts" class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-2">Concours ouverts</h2>
+                <p class="text-gray-500">Les sessions pour lesquelles la préinscription est actuellement possible.</p>
+            </div>
+            <a href="{{ route('pages.concours') }}" class="text-sm font-semibold text-institutionnel hover:text-institutionnel-hover">Tous les concours →</a>
+        </div>
+
+        @if ($concoursOuverts->isNotEmpty())
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach ($concoursOuverts->take(6) as $c)
+                    @include('pages.partials.carte-concours', ['c' => $c])
+                @endforeach
+            </div>
+        @else
+            <div class="rounded-2xl border border-dashed border-gray-300 p-10 text-center">
+                <p class="font-semibold text-marine mb-1">Aucune session ouverte pour le moment</p>
+                <p class="text-sm text-gray-500">Les inscriptions ouvrent généralement en mai. Créez votre compte dès maintenant pour être prêt le jour J.</p>
+            </div>
+        @endif
+    </section>
+
+    {{-- Les 4 concours --}}
+    <section class="bg-fond border-y border-gray-100">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+            <div class="text-center mb-12">
+                <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-3">Quatre concours, quatre profils</h2>
+                <p class="text-gray-500 max-w-2xl mx-auto">Chaque concours prépare à un Certificat d'Aptitude Pédagogique (CAP) et correspond à un niveau de diplôme. Au dépôt, chaque dossier se range dans une chemise de couleur.</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                @foreach ($cycles as $code => $cycle)
+                    <a href="{{ route('pages.concours') }}#{{ Str::slug($code) }}"
+                       class="group relative p-6 rounded-2xl bg-white border border-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition overflow-hidden">
+                        <span class="absolute inset-x-0 top-0 h-1 {{ $cycle['chemise']['classe'] }}"></span>
+                        <p class="text-xs font-bold tracking-wider text-institutionnel mb-2">{{ $code }}</p>
+                        <h3 class="font-semibold text-marine leading-snug mb-3">{{ $cycle['intitule'] }}</h3>
+                        <p class="text-sm text-gray-500 mb-4">{{ $cycle['niveau'] }} — {{ implode(', ', $cycle['diplomes']) }}</p>
+                        <p class="text-xs text-gray-400 flex items-center gap-1.5">
+                            <span class="w-3 h-3 rounded-sm {{ $cycle['chemise']['classe'] }}"></span>
+                            Chemise {{ strtolower($cycle['chemise']['nom']) }}
+                        </p>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- Parcours --}}
+    <section id="parcours" class="bg-marine">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+            <h2 class="text-2xl sm:text-3xl font-bold text-white text-center mb-3">Le parcours du candidat</h2>
+            <p class="text-slate-400 text-center max-w-2xl mx-auto mb-12">Les étapes administratives de l'IPNETP, reprises une à une dans Concours-Pro.</p>
+            <ol class="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
+                @foreach ($parcours as $i => $etape)
+                    <li class="flex gap-4">
+                        <span class="shrink-0 w-9 h-9 rounded-full border border-institutionnel/60 text-institutionnel font-mono text-sm font-bold flex items-center justify-center">{{ str_pad($i + 1, 2, '0', STR_PAD_LEFT) }}</span>
+                        <div>
+                            <h3 class="text-white font-semibold mb-1.5">{{ $etape['t'] }}</h3>
                             <p class="text-slate-300 text-sm leading-relaxed">{{ $etape['d'] }}</p>
                         </div>
-                    @endforeach
+                    </li>
+                @endforeach
+            </ol>
+        </div>
+    </section>
+
+    {{-- Fonctionnalités --}}
+    <section id="fonctionnalites" class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-3">Pensé pour le candidat… et pour le secrétariat</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Chaque service de l'institut dispose de son propre espace : réception des dossiers, service médical, correcteurs et direction des concours.</p>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            @php
+                $features = [
+                    ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'titre' => 'Éligibilité vérifiée', 'texte' => 'Âge apprécié au 1er janvier et diplôme contrôlé avant toute inscription.'],
+                    ['icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titre' => 'Paiement Mobile Money', 'texte' => 'Frais d\'inscription et visite médicale réglés en ligne, reçus en PDF.'],
+                    ['icon' => 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z', 'titre' => 'Dossier complet', 'texte' => 'Les 10 pièces exigées par l\'IPNETP, suivies une à une avec motif en cas de rejet.'],
+                    ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titre' => 'Anonymat & QR Code', 'texte' => 'Correction sous numéro d\'anonymat et convocation vérifiée à l\'entrée des salles.'],
+                ];
+            @endphp
+
+            @foreach ($features as $f)
+                <div class="p-6 rounded-2xl border border-gray-100 bg-white hover:shadow-lg hover:-translate-y-0.5 transition">
+                    <div class="w-11 h-11 rounded-xl bg-institutionnel/10 flex items-center justify-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-institutionnel" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="{{ $f['icon'] }}" />
+                        </svg>
+                    </div>
+                    <h3 class="font-semibold text-marine mb-1.5">{{ $f['titre'] }}</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">{{ $f['texte'] }}</p>
                 </div>
-            </div>
-        </section>
+            @endforeach
+        </div>
+    </section>
 
-        {{-- Final CTA --}}
-        @guest
-            <section class="max-w-4xl mx-auto px-6 py-20 text-center">
-                <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-4">Prêt à vous inscrire ?</h2>
-                <p class="text-gray-500 mb-8">Créez votre compte candidat et déposez votre dossier en quelques minutes.</p>
-                <a href="{{ route('register') }}"
-                   class="inline-block px-8 py-3.5 bg-institutionnel text-white rounded-lg font-semibold hover:bg-institutionnel-hover transition shadow-lg shadow-institutionnel/30">
-                    Créer mon compte candidat
-                </a>
-            </section>
-        @endguest
-
-        {{-- Footer --}}
-        <footer class="border-t border-gray-100">
-            <div class="max-w-6xl mx-auto px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <x-logo />
-                <p class="text-xs text-gray-400 text-center sm:text-right">
-                    © {{ date('Y') }} Concours-Pro — Institut Pédagogique National de l'Enseignement
-                    Technique et Professionnel
-                </p>
+    {{-- Appel final --}}
+    <section class="max-w-4xl mx-auto px-4 sm:px-6 pb-20">
+        <div class="rounded-3xl bg-gradient-to-br from-institutionnel to-marine-light p-10 text-center text-white">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-3">Préparez votre dossier dès aujourd'hui</h2>
+            <p class="text-blue-100 mb-8 max-w-xl mx-auto">Extrait de naissance, casier judiciaire de moins de 3 mois, certificat de non-bégaiement… consultez la liste complète des pièces avant l'ouverture.</p>
+            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <a href="{{ route('pages.guide') }}#dossier" class="px-7 py-3 bg-white text-marine rounded-lg font-semibold hover:bg-blue-50 transition">Voir les pièces à fournir</a>
+                @guest
+                    <a href="{{ route('register') }}" class="px-7 py-3 border border-white/40 rounded-lg font-semibold hover:bg-white/10 transition">Créer mon compte</a>
+                @endguest
             </div>
-        </footer>
-    </body>
-</html>
+        </div>
+    </section>
+
+</x-public-layout>

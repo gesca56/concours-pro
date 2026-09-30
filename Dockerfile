@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY resources resources
+# Référentiel IPNETP : contient des classes Tailwind (couleurs des chemises)
+COPY config/ipnetp.php config/ipnetp.php
 COPY vite.config.js tailwind.config.js postcss.config.js ./
 RUN npm run build
 
