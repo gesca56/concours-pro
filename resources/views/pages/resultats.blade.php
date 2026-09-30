@@ -46,7 +46,7 @@
                         <h2 class="text-lg font-bold text-marine mt-1">{{ $c->nom }}</h2>
                     </div>
                     <dl class="flex gap-6 text-sm">
-                        <div><dt class="text-xs text-gray-500">Composants</dt><dd class="font-semibold text-marine">{{ $c->notees_count }}</dd></div>
+                        <div><dt class="text-xs text-gray-500">Ont composé</dt><dd class="font-semibold text-marine">{{ $c->notees_count }}</dd></div>
                         <div><dt class="text-xs text-gray-500">Admis</dt><dd class="font-semibold text-marine">{{ $admis->count() }}</dd></div>
                         <div><dt class="text-xs text-gray-500">Taux</dt><dd class="font-semibold text-marine">{{ $taux }} %</dd></div>
                     </dl>
