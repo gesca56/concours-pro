@@ -5,6 +5,7 @@ use App\Http\Controllers\Administration\AnonymatController;
 use App\Http\Controllers\Administration\ConcoursController as AdminConcoursController;
 use App\Http\Controllers\Administration\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Administration\DeliberationController;
+use App\Http\Controllers\Administration\SignalementController;
 use App\Http\Controllers\CandidatureController;
 use App\Http\Controllers\ConvocationController;
 use App\Http\Controllers\DocumentController;
@@ -29,6 +30,7 @@ Route::get('/', [PageController::class, 'accueil'])->name('accueil');
 Route::get('/l-institut', [PageController::class, 'institut'])->name('pages.institut');
 Route::get('/les-concours', [PageController::class, 'concours'])->name('pages.concours');
 Route::get('/guide-du-candidat', [PageController::class, 'guide'])->name('pages.guide');
+Route::get('/resultats', [PageController::class, 'resultats'])->name('pages.resultats');
 Route::get('/preparer-le-concours', [PageController::class, 'preparation'])->name('pages.preparation');
 
 Route::get('/dashboard', function () {
@@ -101,6 +103,8 @@ Route::middleware(['auth', 'verified', 'role:administration'])->prefix('administ
     Route::post('concours/{concours}/statut', [AdminConcoursController::class, 'changerStatut'])->name('concours.statut');
     Route::post('concours/{concours}/anonymat', AnonymatController::class)->name('concours.anonymat');
     Route::post('concours/{concours}/deliberation', DeliberationController::class)->name('concours.deliberation');
+    Route::get('signalements', [SignalementController::class, 'index'])->name('signalements.index');
+    Route::patch('signalements/{signalement}', [SignalementController::class, 'update'])->name('signalements.update');
 });
 
 // --- Consultation d'une pièce justificative (candidat propriétaire, réception, administration) ---

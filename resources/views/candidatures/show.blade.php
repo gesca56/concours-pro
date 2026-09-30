@@ -141,7 +141,7 @@
                     @endphp
                     <div class="py-2 border-b border-gray-100 last:border-0" x-data="{ ouvert: false }">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm text-gray-700">{{ ucfirst($paiement->type) }} — {{ number_format($paiement->montant, 0, ',', ' ') }} FCFA</span>
+                            <span class="text-sm text-gray-700">{{ $paiement->type === 'visite_medicale' ? __('Visite médicale') : __('Inscription') }} — {{ number_format($paiement->montant, 0, ',', ' ') }} FCFA</span>
                             <div class="flex items-center gap-3">
                                 @if ($paiement->statut === 'valide')
                                     <a href="{{ route('paiements.recu', $paiement) }}" target="_blank" class="text-xs text-institutionnel hover:text-institutionnel-hover">
@@ -158,6 +158,13 @@
                                 <x-statut-badge :statut="$paiement->statut" />
                             </div>
                         </div>
+
+                        @foreach ($paiement->signalements->where('statut', 'traite') as $traite)
+                            <div class="mt-2 text-xs rounded-md bg-gray-50 border border-gray-100 p-3">
+                                <p class="text-gray-500">{{ __('Votre signalement du') }} {{ $traite->created_at->format('d/m/Y') }} : « {{ Str::limit($traite->message, 80) }} »</p>
+                                <p class="text-gray-800 mt-1"><span class="font-semibold">{{ __('Réponse du service des concours :') }}</span> {{ $traite->reponse_administration }}</p>
+                            </div>
+                        @endforeach
 
                         @if (! $signalementEnCours && $paiement->statut === 'valide')
                             <div x-show="ouvert" x-cloak class="mt-3">

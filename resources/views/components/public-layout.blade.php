@@ -7,6 +7,7 @@
         ['route' => 'pages.concours', 'libelle' => 'Les concours'],
         ['route' => 'pages.guide', 'libelle' => 'Guide du candidat'],
         ['route' => 'pages.preparation', 'libelle' => 'Préparer le concours'],
+        ['route' => 'pages.resultats', 'libelle' => 'Résultats'],
     ];
 @endphp
 
@@ -40,13 +41,13 @@
         <header class="sticky top-0 z-20 bg-white/85 backdrop-blur border-b border-gray-100" x-data="{ menu: false }">
             <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
                 <x-logo />
-                <nav class="hidden md:flex items-center gap-7 text-sm font-medium text-gray-600">
+                <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-gray-600">
                     @foreach ($liens as $lien)
                         <a href="{{ route($lien['route']) }}"
                            class="{{ request()->routeIs($lien['route']) ? 'text-institutionnel' : 'hover:text-marine' }}">{{ $lien['libelle'] }}</a>
                     @endforeach
                 </nav>
-                <div class="hidden md:flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-3">
                     @auth
                         <a href="{{ route('dashboard') }}"
                            class="px-4 py-2 bg-institutionnel text-white rounded-lg text-sm font-semibold hover:bg-institutionnel-hover transition">
@@ -60,14 +61,14 @@
                         </a>
                     @endauth
                 </div>
-                <button type="button" @click="menu = !menu" class="md:hidden p-2 -mr-2 text-gray-600" aria-label="Menu">
+                <button type="button" @click="menu = !menu" class="lg:hidden p-2 -mr-2 text-gray-600" aria-label="Menu">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
                         <path x-show="!menu" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
                         <path x-show="menu" x-cloak stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
                     </svg>
                 </button>
             </div>
-            <div x-show="menu" x-cloak class="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
+            <div x-show="menu" x-cloak class="lg:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
                 @foreach ($liens as $lien)
                     <a href="{{ route($lien['route']) }}" class="block py-2 text-sm font-medium text-gray-700">{{ $lien['libelle'] }}</a>
                 @endforeach
