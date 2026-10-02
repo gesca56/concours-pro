@@ -141,17 +141,19 @@
     {{-- Fonctionnalités --}}
     <section id="fonctionnalites" class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-3">Pensé pour le candidat… et pour le secrétariat</h2>
-            <p class="text-gray-500 max-w-xl mx-auto">Chaque service de l'institut dispose de son propre espace : réception des dossiers, service médical, correcteurs et direction des concours.</p>
+            <h2 class="text-2xl sm:text-3xl font-bold text-marine mb-3">Du concours à la formation, tout en ligne</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Chaque service de l'institut dispose de son propre espace : réception des dossiers, service médical, correcteurs, direction des concours et équipe pédagogique.</p>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @php
                 $features = [
                     ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'titre' => 'Éligibilité vérifiée', 'texte' => 'Âge apprécié au 1er janvier et diplôme contrôlé avant toute inscription.'],
                     ['icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'titre' => 'Paiement Mobile Money', 'texte' => 'Frais d\'inscription et visite médicale réglés en ligne, reçus en PDF.'],
                     ['icon' => 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z', 'titre' => 'Dossier complet', 'texte' => 'Les 10 pièces exigées par l\'IPNETP, suivies une à une avec motif en cas de rejet.'],
                     ['icon' => 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z', 'titre' => 'Anonymat & QR Code', 'texte' => 'Correction sous numéro d\'anonymat et convocation vérifiée à l\'entrée des salles.'],
+                    ['icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'titre' => 'Préparation en ligne', 'texte' => 'Cours de méthode et quiz d\'entraînement corrigés, gratuits pour tous les candidats.'],
+                    ['icon' => 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422A12.083 12.083 0 0118 17.5c-2.03 1.2-4.04 1.5-6 1.5s-3.97-.3-6-1.5a12.083 12.083 0 01-.16-6.922L12 14z', 'titre' => 'Formation des admis', 'texte' => 'Promotions, cours, devoirs notés, emploi du temps et bulletin pour les élèves-professeurs.'],
                 ];
             @endphp
 

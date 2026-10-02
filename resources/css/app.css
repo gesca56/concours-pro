@@ -5,3 +5,40 @@
 [x-cloak] {
     display: none !important;
 }
+
+/* Contenu des leçons (Markdown converti en HTML) */
+@layer components {
+    .contenu-cours {
+        @apply text-gray-700 leading-relaxed space-y-4;
+    }
+    .contenu-cours h1,
+    .contenu-cours h2 {
+        @apply text-xl font-semibold text-marine pt-2;
+    }
+    .contenu-cours h3,
+    .contenu-cours h4 {
+        @apply text-lg font-semibold text-marine pt-1;
+    }
+    .contenu-cours ul {
+        @apply list-disc ps-6 space-y-1;
+    }
+    .contenu-cours ol {
+        @apply list-decimal ps-6 space-y-1;
+    }
+    .contenu-cours a {
+        @apply text-institutionnel underline;
+    }
+    .contenu-cours blockquote {
+        @apply border-s-4 border-institutionnel/40 bg-institutionnel/5 ps-4 py-2 italic;
+    }
+    .contenu-cours code {
+        @apply bg-gray-100 rounded px-1 text-sm;
+    }
+    .contenu-cours table {
+        @apply w-full text-sm border border-gray-200;
+    }
+    .contenu-cours th,
+    .contenu-cours td {
+        @apply border border-gray-200 px-3 py-1.5 text-left;
+    }
+}

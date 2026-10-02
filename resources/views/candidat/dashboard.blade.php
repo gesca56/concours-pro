@@ -116,6 +116,18 @@
 
             {{-- Colonne d'aide --}}
             <aside class="space-y-6">
+                <a href="{{ route('formation.index') }}" class="block rounded-lg bg-gradient-to-br from-institutionnel to-marine-light text-white p-6 hover:opacity-95">
+                    <p class="text-xs uppercase tracking-wider text-blue-100">{{ __('Nouveau') }}</p>
+                    <h3 class="font-semibold text-lg mt-1">
+                        {{ auth()->user()->promotionActive() ? __('Ma formation en ligne') : __('Préparez-vous en ligne') }}
+                    </h3>
+                    <p class="text-sm text-blue-100 mt-1">
+                        {{ auth()->user()->promotionActive()
+                            ? __('Cours, devoirs, emploi du temps et notes de votre promotion.')
+                            : __('Cours de méthode et quiz d\'entraînement corrigés, gratuits.') }}
+                    </p>
+                    <span class="inline-block mt-3 text-sm font-semibold">{{ __('Accéder à l\'e-learning') }} →</span>
+                </a>
                 <div class="bg-white shadow-sm sm:rounded-lg p-6">
                     <h3 class="font-semibold text-gray-900 mb-3">{{ __('Bon à savoir') }}</h3>
                     <ul class="space-y-3 text-sm text-gray-600">

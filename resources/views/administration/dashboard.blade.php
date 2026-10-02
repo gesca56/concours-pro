@@ -75,6 +75,14 @@
                             <p class="font-semibold text-marine">{{ __('Vérifier un QR Code') }}</p>
                             <p class="text-xs text-gray-500 mt-1">{{ __('Contrôle des convocations le jour J') }}</p>
                         </a>
+                        <a href="{{ route('administration.promotions.index') }}" class="p-4 rounded-lg border border-gray-100 hover:border-institutionnel">
+                            <p class="font-semibold text-marine">{{ __('Promotions') }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('Inscrire les admis, emploi du temps, annonces') }}</p>
+                        </a>
+                        <a href="{{ route('pedagogie.dashboard') }}" class="p-4 rounded-lg border border-gray-100 hover:border-institutionnel">
+                            <p class="font-semibold text-marine">{{ __('Gestion pédagogique') }}</p>
+                            <p class="text-xs text-gray-500 mt-1">{{ __('Modules, cours en ligne, quiz et devoirs') }}</p>
+                        </a>
                     </div>
                     <p class="text-xs text-gray-500 mt-4">
                         {{ __('Les résultats des concours terminés sont publiés automatiquement sur la') }}

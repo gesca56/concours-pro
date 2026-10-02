@@ -6,7 +6,7 @@
             <div class="filet"></div>
             <strong>INSTITUT PÉDAGOGIQUE NATIONAL DE L'ENSEIGNEMENT<br>TECHNIQUE ET PROFESSIONNEL (IPNETP)</strong>
             <div class="filet"></div>
-            Secrétariat des concours
+            {{ $service ?? 'Secrétariat des concours' }}
         </td>
         <td class="entete-droite">
             <strong>RÉPUBLIQUE DE CÔTE D'IVOIRE</strong>

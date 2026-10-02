@@ -1,3 +1,21 @@
+@php
+    // Liens propres à chaque rôle : [route, motif de route active, libellé].
+    $liensMetier = match (auth()->user()->role) {
+        \App\Enums\Role::Candidat => [
+            ['candidatures.index', 'candidatures.*', 'Mes candidatures'],
+            ['formation.index', 'formation.*', 'E-learning'],
+        ],
+        \App\Enums\Role::Enseignant => [
+            ['pedagogie.dashboard', 'pedagogie.*', 'Pédagogie'],
+        ],
+        \App\Enums\Role::Administration => [
+            ['administration.concours.index', 'administration.concours.*', 'Concours'],
+            ['administration.promotions.index', 'administration.promotions.*', 'Promotions'],
+            ['pedagogie.dashboard', 'pedagogie.*', 'Pédagogie'],
+        ],
+        default => [],
+    };
+@endphp
 <nav x-data="{ open: false }" class="bg-marine border-b border-marine-light/40">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -13,11 +31,11 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="!text-slate-200 hover:!text-white">
                         {{ __('Tableau de bord') }}
                     </x-nav-link>
-                    @if (auth()->user()->role === \App\Enums\Role::Candidat)
-                        <x-nav-link :href="route('candidatures.index')" :active="request()->routeIs('candidatures.*')" class="!text-slate-200 hover:!text-white">
-                            {{ __('Mes candidatures') }}
+                    @foreach ($liensMetier as [$route, $motif, $libelle])
+                        <x-nav-link :href="route($route)" :active="request()->routeIs($motif)" class="!text-slate-200 hover:!text-white">
+                            {{ __($libelle) }}
                         </x-nav-link>
-                    @endif
+                    @endforeach
                 </div>
             </div>
 
@@ -73,11 +91,11 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="!text-slate-200">
                 {{ __('Tableau de bord') }}
             </x-responsive-nav-link>
-            @if (auth()->user()->role === \App\Enums\Role::Candidat)
-                <x-responsive-nav-link :href="route('candidatures.index')" :active="request()->routeIs('candidatures.*')" class="!text-slate-200">
-                    {{ __('Mes candidatures') }}
+            @foreach ($liensMetier as [$route, $motif, $libelle])
+                <x-responsive-nav-link :href="route($route)" :active="request()->routeIs($motif)" class="!text-slate-200">
+                    {{ __($libelle) }}
                 </x-responsive-nav-link>
-            @endif
+            @endforeach
         </div>
 
         <!-- Responsive Settings Options -->

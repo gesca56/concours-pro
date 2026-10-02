@@ -11,6 +11,14 @@
                 <div class="bg-emerald-50 text-emerald-800 text-sm p-4 rounded-md">{{ session('status') }}</div>
             @endif
 
+            <a href="{{ route('pedagogie.dashboard') }}" class="flex items-center justify-between gap-4 p-4 rounded-lg bg-white shadow-sm hover:ring-2 hover:ring-institutionnel/40 text-sm">
+                <span>
+                    <span class="block font-semibold text-marine">{{ __('Gestion pédagogique et e-learning') }}</span>
+                    <span class="block text-gray-500">{{ __('Vos modules, leçons, quiz, devoirs et copies d\'élèves-professeurs') }}</span>
+                </span>
+                <span class="text-institutionnel font-semibold">→</span>
+            </a>
+
             <div class="bg-institutionnel/5 border border-institutionnel/20 rounded-md p-4 text-sm text-marine">
                 {{ __("Correction anonyme : seul le numéro de copie est affiché, l'identité du candidat n'est pas accessible.") }}
             </div>

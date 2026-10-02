@@ -129,6 +129,26 @@
         </div>
     </section>
 
+    {{-- E-learning --}}
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-12">
+        <div class="rounded-3xl bg-gradient-to-r from-marine to-marine-light text-white p-8 sm:p-10 flex flex-wrap items-center justify-between gap-6">
+            <div class="max-w-2xl">
+                <p class="text-xs uppercase tracking-wider text-blue-200">E-learning Concours-Pro</p>
+                <h2 class="text-2xl font-bold mt-1">Révisez en ligne, gratuitement</h2>
+                <p class="text-blue-100 mt-2 text-sm">
+                    Une fois votre compte créé, l'espace e-learning vous donne accès à des cours de méthode
+                    (dissertation, culture générale, initiation à la pédagogie) et à des quiz d'entraînement
+                    corrigés automatiquement, avec explications.
+                </p>
+            </div>
+            @auth
+                <a href="{{ route('dashboard') }}" class="px-5 py-3 bg-white text-marine font-semibold rounded-lg hover:bg-blue-50">Accéder à mon espace</a>
+            @else
+                <a href="{{ route('register') }}" class="px-5 py-3 bg-white text-marine font-semibold rounded-lg hover:bg-blue-50">Créer mon compte</a>
+            @endauth
+        </div>
+    </section>
+
     {{-- Après l'admission --}}
     <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
         <div class="rounded-3xl border border-gray-100 p-8 sm:p-10 grid lg:grid-cols-3 gap-8">
@@ -139,7 +159,7 @@
             <ol class="lg:col-span-2 grid sm:grid-cols-3 gap-6 text-sm">
                 <li>
                     <p class="font-semibold text-marine mb-1">Formation à l'IPNETP</p>
-                    <p class="text-gray-600">Pédagogie, didactique de la spécialité et stages en établissement, sans frais de formation.</p>
+                    <p class="text-gray-600">Pédagogie, didactique de la spécialité et stages en établissement, sans frais de formation. Cours, devoirs, emploi du temps et notes sont suivis dans l'espace e-learning.</p>
                 </li>
                 <li>
                     <p class="font-semibold text-marine mb-1">Certificat d'Aptitude Pédagogique</p>

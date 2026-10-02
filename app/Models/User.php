@@ -6,6 +6,7 @@ namespace App\Models;
 use App\Enums\Role;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -61,6 +62,44 @@ class User extends Authenticatable
     public function candidatures(): HasMany
     {
         return $this->hasMany(Candidature::class);
+    }
+
+    /**
+     * Promotions dans lesquelles l'élève-professeur est inscrit.
+     *
+     * @return BelongsToMany<Promotion, $this>
+     */
+    public function promotions(): BelongsToMany
+    {
+        return $this->belongsToMany(Promotion::class, 'inscriptions_promotion')
+            ->withPivot('matricule', 'candidature_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Promotion en cours de l'élève (la plus récente), s'il en a une.
+     */
+    public function promotionActive(): ?Promotion
+    {
+        return $this->promotions()->where('statut', 'en_cours')->latest('promotions.id')->first();
+    }
+
+    /**
+     * @return BelongsToMany<Lecon, $this>
+     */
+    public function leconsTerminees(): BelongsToMany
+    {
+        return $this->belongsToMany(Lecon::class, 'lecons_terminees')->withTimestamps();
+    }
+
+    /**
+     * Modules dont l'enseignant est responsable.
+     *
+     * @return HasMany<Module, $this>
+     */
+    public function modulesEnseignes(): HasMany
+    {
+        return $this->hasMany(Module::class, 'enseignant_id');
     }
 
     public function hasRole(Role $role): bool

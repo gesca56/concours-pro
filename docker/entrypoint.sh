@@ -23,6 +23,9 @@ if [ "$NB_CONCOURS" = "0" ]; then
     php artisan db:seed --class=ConcoursIpnetpSeeder --force
 fi
 
+# Contenus de démonstration de l'e-learning (sans effet si des modules existent déjà).
+php artisan db:seed --class=PedagogieIpnetpSeeder --force || true
+
 if [ "$RUN_SEEDER" = "true" ]; then
     php artisan db:seed --force
 fi
