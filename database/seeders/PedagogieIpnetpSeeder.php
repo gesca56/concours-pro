@@ -247,7 +247,7 @@ MD,
                     ],
                 ],
                 'quiz' => [
-                    'titre' => 'Quiz — Méthode de la dissertation',
+                    'titre' => 'Méthode de la dissertation',
                     'consignes' => 'Une seule bonne réponse par question.',
                     'duree_minutes' => 10,
                     'questions' => [
@@ -322,7 +322,7 @@ MD,
                     ],
                 ],
                 'quiz' => [
-                    'titre' => 'Quiz — Repères institutionnels',
+                    'titre' => 'Repères institutionnels',
                     'duree_minutes' => 8,
                     'questions' => [
                         ['Quelle est la devise de la Côte d\'Ivoire ?', ['Unité – Travail – Progrès', 'Union – Discipline – Travail', 'Paix – Travail – Patrie'], 1, null],
@@ -402,7 +402,7 @@ MD,
                     ],
                 ],
                 'quiz' => [
-                    'titre' => 'Quiz — Notions de pédagogie',
+                    'titre' => 'Notions de pédagogie',
                     'duree_minutes' => 10,
                     'questions' => [
                         ['Quel verbe convient à un objectif opérationnel ?', ['Comprendre', 'Savoir', 'Calculer'], 2, 'Un objectif opérationnel s\'exprime par un comportement observable : calculer, identifier, réaliser…'],
